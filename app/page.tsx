@@ -135,7 +135,6 @@ export default function DashboardPage() {
           color="amber"
           format={formatCurrency}
           index={7}
-          subtitle="Diskon produk: penjual + platform + voucher penjual. Lihat rincian di bawah."
         />
         <MetricCard
           title="Total Ongkir"
@@ -144,7 +143,6 @@ export default function DashboardPage() {
           color="slate"
           format={formatCurrency}
           index={8}
-          subtitle="Ongkir yang dibayar pembeli, dari order Selesai."
         />
       </div>
 
