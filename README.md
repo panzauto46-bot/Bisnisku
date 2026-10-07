@@ -80,8 +80,8 @@ Atau bisa juga pakai:
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/bisnisku.git
-cd bisnisku
+git clone https://github.com/panzauto46-bot/Bisnisku.git
+cd Bisnisku
 ```
 
 ### 2. Install Dependencies
@@ -459,9 +459,9 @@ MIT License - see [LICENSE](./LICENSE) for details
 ## 💬 Support
 
 ### Get Help
-- 📧 Email: support@shopeeflow.com (example)
+- 📧 Email: support@bisnisku.com (example)
 - 💬 Discord: [Join our community](#) (TBD)
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/shopeeflow/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/panzauto46-bot/Bisnisku/issues)
 - 📖 Docs: [Documentation](#)
 
 ---
@@ -477,9 +477,9 @@ Terima kasih kepada:
 
 ## 📈 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/shopeeflow?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/shopeeflow?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/yourusername/shopeeflow?style=social)
+![GitHub stars](https://img.shields.io/github/stars/panzauto46-bot/Bisnisku?style=social)
+![GitHub forks](https://img.shields.io/github/forks/panzauto46-bot/Bisnisku?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/panzauto46-bot/Bisnisku?style=social)
 
 ---
 
@@ -498,6 +498,6 @@ Setelah Phase 1 selesai, kami akan fokus pada:
 
 **Made with ❤️ for Shopee Sellers**
 
-[⭐ Star this project](https://github.com/yourusername/shopeeflow) | [🐛 Report Bug](https://github.com/yourusername/shopeeflow/issues) | [💡 Request Feature](https://github.com/yourusername/shopeeflow/issues)
+[⭐ Star this project](https://github.com/panzauto46-bot/Bisnisku) | [🐛 Report Bug](https://github.com/panzauto46-bot/Bisnisku/issues) | [💡 Request Feature](https://github.com/panzauto46-bot/Bisnisku/issues)
 
 </div>

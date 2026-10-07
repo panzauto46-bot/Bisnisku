@@ -24,6 +24,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0] - 2026-10-07
+
+### Core Features
+- Excel import from Shopee Seller Center (drag & drop, 49 columns)
+- SQLite database with Drizzle ORM
+- Dashboard with real-time stats and 4 interactive charts
+- 5 order pages with smart status filtering:
+  - Semua Pesanan (All Orders)
+  - Perlu Dikirim (Pending Shipment)
+  - Dikirim (Shipped)
+  - Selesai (Completed)
+  - Dibatalkan (Cancelled)
+- Order detail modal displaying all 49 fields
+- Profit analysis with product cost management
+- Global search and pagination
+- Responsive design with Framer Motion animations
+- Toast notifications
+
+### Technical
+- Next.js 14 (App Router) + TypeScript
+- Tailwind CSS + custom UI components
+- Framer Motion for animations
+- Recharts for data visualization
+- SQLite + Drizzle ORM
+- Shopee status mapping engine
+
+### Verified With Real Data
+- 670 orders imported from actual Shopee export
+- Status filtering: 10 pending / 213 shipped / 328 completed / 119 cancelled
+- Revenue: Rp 27.517.101
+- Top products: Knop Baut Ketupat, Velocity Stack, etc.
+
+### Bug Fixes
+- Fixed dummy data override: removed legacy `src/` prototype that
+  Next.js prioritized over root `app/` directory
+- Fixed `components.json` and `drizzle.config.ts` paths after
+  removing `src/` folder
+- Fixed database lock issue with singleton connection pattern
+
+---
+
 ## Planned Releases
 
 ### [1.0.0] - Phase 1.0 MVP - Target: October 27, 2026

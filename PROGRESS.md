@@ -1,16 +1,22 @@
 # 📊 BisnisKu - Development Progress Tracker
 
 **Last Updated**: October 7, 2026  
-**Current Phase**: Phase 1.0 COMPLETE - Testing & Polish  
-**Overall Progress**: 85%
+**Current Phase**: Phase 1.0 COMPLETE - Pushed to GitHub  
+**Overall Progress**: 90%
 
 ---
 
 ## 🎯 Current Status: WORKING WITH REAL DATA ✅
 
-Aplikasi sudah berjalan dengan **DATA ASLI** dari file Excel Shopee Anda.
-Ini BUKAN data dummy/mockup — semua angka berasal dari file `semua.xlsx`
-yang Anda export dari Shopee Seller Center.
+Aplikasi sudah berjalan dengan **DATA ASLI** dari file Excel Shopee Anda
+dan sudah ter-push ke GitHub. Ini BUKAN data dummy/mockup — semua angka
+berasal dari file `semua.xlsx` yang Anda export dari Shopee Seller Center.
+
+### 🐙 Repository
+- **URL**: https://github.com/panzauto46-bot/Bisnisku
+- **Branch**: `master`
+- **Latest Commit**: `bd1ed7a` - feat: BisnisKu v1.0.0
+- **Files**: 65 files, 18.000+ baris kode
 
 ### Verifikasi Data (Oct 7, 2026)
 
@@ -32,14 +38,33 @@ yang Anda export dari Shopee Seller Center.
 ## 📈 Overall Progress
 
 ```
-████████████████████████████████████████████░░░░░░ 85%
+██████████████████████████████████████████████████░░ 90%
 ```
 
 | Phase | Progress | Status |
 |-------|----------|--------|
-| Phase 1.0 - MVP | 95% | 🟢 Almost Complete |
+| Phase 1.0 - MVP | 98% | 🟢 Complete |
 | Phase 1.1 - Enhancement | 80% | 🟢 In Progress |
 | Phase 1.2 - Profit Analysis | 85% | 🟢 In Progress |
+
+---
+
+## 🔧 Bug Fixes (Oct 7, 2026)
+
+### Critical Fix: Dummy Data Override
+**Issue**: Next.js memprioritaskan `src/app` jika ada, sehingga browser
+menampilkan prototype lama dengan data dummy ("1,248", "#ORD-9001")
+alih-alih implementasi asli di root `app/`.
+
+**Solution**:
+- ✅ Hapus folder `src/` (prototype lama dengan data dummy)
+- ✅ Fix `components.json` (css path: `src/app/globals.css` → `app/globals.css`)
+- ✅ Fix `drizzle.config.ts` (schema path: `./src/db/schema.ts` → `./db/schema.ts`)
+- ✅ Update `PROJECT_STRUCTURE.md` (tsconfig paths)
+- ✅ Verifikasi browser menampilkan data asli (670, Rp 27.517.101)
+- ✅ Production build pass (18 routes)
+
+**Result**: Dashboard sekarang menampilkan 100% data asli dari Excel.
 
 ---
 
@@ -141,8 +166,9 @@ yang Anda export dari Shopee Seller Center.
 
 ## 🚧 REMAINING TASKS
 
-### Phase 1.0 - MVP (5% remaining)
-- [ ] Git repository init & first commit
+### Phase 1.0 - MVP (2% remaining)
+- [x] Git repository init & first commit
+- [x] Push to GitHub (https://github.com/panzauto46-bot/Bisnisku)
 - [ ] Final end-to-end testing
 
 ### Phase 1.1 - Enhancement (20% remaining)
