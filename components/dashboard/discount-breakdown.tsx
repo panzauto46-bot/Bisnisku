@@ -4,14 +4,10 @@ import { motion } from 'framer-motion'
 import { Receipt } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency } from '@/utils/format'
-import type {
-  DiscountBreakdown,
-  ShippingBreakdown,
-} from '@/types/order.types'
+import type { DiscountBreakdown } from '@/types/order.types'
 
 interface DiscountBreakdownCardProps {
   discount: DiscountBreakdown
-  shipping: ShippingBreakdown
   completedCount: number
 }
 
@@ -23,7 +19,6 @@ interface Row {
 
 export function DiscountBreakdownCard({
   discount,
-  shipping,
   completedCount,
 }: DiscountBreakdownCardProps) {
   const productRows: Row[] = [
@@ -37,16 +32,6 @@ export function DiscountBreakdownCard({
     { label: 'Potongan Koin Platform', value: discount.platformCoinDeduction },
     { label: 'Cashback Koin', value: discount.coinCashback },
     { label: 'Diskon Kartu Kredit', value: discount.creditCardDiscount },
-  ]
-
-  const shippingRows: Row[] = [
-    { label: 'Ongkos Kirim Dibayar Pembeli', value: shipping.paidByBuyer },
-    { label: 'Perkiraan Ongkos Kirim', value: shipping.estimatedShipping },
-    {
-      label: 'Estimasi Potongan Biaya Pengiriman',
-      value: shipping.estimatedShippingDiscount,
-    },
-    { label: 'Ongkos Kirim Pengembalian', value: shipping.returnShippingFee },
   ]
 
   return (
@@ -64,7 +49,8 @@ export function DiscountBreakdownCard({
                 Rincian Potongan Platform
               </CardTitle>
               <p className="mt-1 text-sm text-slate-500">
-                Setiap komponen potongan yang dikenakan platform, dihitung dari{' '}
+                Setiap komponen potongan harga yang dikenakan platform,
+                dihitung dari{' '}
                 <span className="font-medium text-slate-700">
                   {completedCount} pesanan Selesai
                 </span>{' '}
@@ -75,7 +61,7 @@ export function DiscountBreakdownCard({
         </CardHeader>
 
         <CardContent className="grid grid-cols-1 gap-x-10 gap-y-6 p-6 lg:grid-cols-2">
-          {/* Left column: discounts */}
+          {/* Left column: the deductions themselves */}
           <div className="space-y-5">
             <RowGroup
               title="Potongan Harga Produk"
@@ -109,53 +95,46 @@ export function DiscountBreakdownCard({
             </div>
           </div>
 
-          {/* Right column: shipping */}
-          <div className="space-y-5">
-            <RowGroup
-              title="Biaya Pengiriman"
-              rows={shippingRows}
-            />
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <h4 className="text-sm font-semibold text-slate-900">
-                Kenapa ini penting?
-              </h4>
-              <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
-                <li className="flex gap-2">
-                  <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
-                  <span>
-                    <strong>Total Diskon</strong> di dashboard hanya mencakup
-                    diskon produk (penjual + platform + voucher penjual).
-                  </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
-                  <span>
-                    Voucher platform, koin, dan diskon kartu kredit dipotong
-                    terpisah saat checkout — angkanya besar dan sering luput
-                    dilihat.
-                  </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
-                  <span>
-                    Panel ini menghitung semuanya dari order{' '}
-                    <strong>Selesai</strong> saja, jadi sebanding dengan total
-                    pendapatan.
-                  </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
-                  <span>
-                    Ongkir di sini adalah <strong>estimasi</strong> dari file
-                    pesanan. Untuk angka real yang dibayarkan ke jasa kirim,
-                    lihat panel <strong>Penghasilan Bersih Platform</strong> —
-                    ada bagian <em>Cek Silang</em> yang membandingkan kedua
-                    file langsung.
-                  </span>
-                </li>
-              </ul>
-            </div>
+          {/* Right column: explanation */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h4 className="text-sm font-semibold text-slate-900">
+              Kenapa ini penting?
+            </h4>
+            <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-slate-600">
+              <li className="flex gap-2">
+                <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
+                <span>
+                  <strong>Total Diskon</strong> di dashboard hanya mencakup
+                  diskon produk (penjual + platform + voucher penjual).
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
+                <span>
+                  Voucher platform, koin, dan diskon kartu kredit dipotong
+                  terpisah saat checkout — angkanya besar dan sering luput
+                  dilihat.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
+                <span>
+                  Panel ini menghitung semuanya dari order{' '}
+                  <strong>Selesai</strong> saja, jadi sebanding dengan total
+                  pendapatan.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
+                <span>
+                  Panel ini <strong>tidak memuat ongkir</strong> — file pesanan
+                  hanya menyimpan estimasi ongkir. Angka real yang dibayarkan
+                  ke jasa kirim, gratis ongkir, dan ongkir retur ada di panel{' '}
+                  <strong>Penghasilan Bersih Platform</strong> di bawah, beserta
+                  bagian <em>Cek Silang</em> yang membandingkan kedua file.
+                </span>
+              </li>
+            </ul>
           </div>
         </CardContent>
       </Card>

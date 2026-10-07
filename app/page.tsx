@@ -147,11 +147,12 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Discount & shipping breakdown — full transparency on every
-          deduction component the platform applies */}
+      {/* Discount & checkout-deduction breakdown — full transparency on
+          every price cut the platform applies. Shipping costs are NOT here:
+          the order file only stores shipping estimates, the real figures
+          live in the Penghasilan Bersih Platform panel below. */}
       <DiscountBreakdownCard
         discount={stats.discountBreakdown}
-        shipping={stats.shippingBreakdown}
         completedCount={stats.completed}
       />
 

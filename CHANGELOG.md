@@ -64,6 +64,36 @@ angka persisnya diambil langsung dari settlement report.
 
 ---
 
+### Pemisahan Fungsi Panel: Hapus Ongkir Estimasi - October 8, 2026
+
+#### Problem
+Panel "Rincian Potongan Platform" menampilkan "Perkiraan Ongkos Kirim"
+Rp 5.998.185 dan "Estimasi Potongan Biaya Pengiriman" Rp 4.689.600. Angka
+ini **estimasi** — file pesanan tidak menyimpan berapa ongkir yang benar-benar
+dibayarkan ke jasa kirim. Sekarang angka realnya sudah ada di panel Penghasilan
+Bersih Platform, sehingga bagian ongkir di panel potongan redundan dan
+berpotensi membingungkan.
+
+#### Changed — Opsi A: pisahkan tegas per fungsi
+- 🔄 Panel **Rincian Potongan Platform** sekarang **hanya berisi potongan
+  harga** (semuanya aktual dari file pesanan): diskon penjual/platform,
+  voucher penjual/platform, koin, cashback, diskon kartu kredit. Bagian
+  "Biaya Pengiriman" dihilangkan sepenuhnya
+- 🔄 Prop `shipping` di `DiscountBreakdownCard` dihapus; layout grid 2 kolom
+  tetap (kiri rincian, kanan penjelasan)
+- 🔄 Catatan "Kenapa ini penting?" diperbarui: ada bullet baru yang menjelaskan
+  panel ini **tidak memuat ongkir**, dan angka ongkir real ada di panel
+  Penghasilan Bersih Platform
+
+#### Result
+Tidak ada lagi angka estimasi yang ditampilkan di dashboard. Tiap panel
+memiliki satu sumber data yang jelas:
+- Rincian Potongan Platform → file **pesanan**, potongan harga aktual
+- Penghasilan Bersih Platform → file **penghasilan**, biaya + ongkir real,
+  plus section Cek Silang
+
+---
+
 ### Sinkronisasi Antar-File & Perbaikan Label - October 8, 2026
 
 #### Problem
