@@ -131,7 +131,7 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] text-left text-sm">
+            <table className={`w-full text-left text-sm ${status === 'cancelled' ? 'min-w-[1150px]' : 'min-w-[900px]'}`}>
               <thead className="border-b border-slate-200 bg-slate-50">
                 <tr>
                   <th className="px-4 py-3 font-semibold text-slate-600">
@@ -140,6 +140,11 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
                   <th className="px-4 py-3 font-semibold text-slate-600">
                     Status
                   </th>
+                  {status === 'cancelled' && (
+                    <th className="px-4 py-3 font-semibold text-slate-600">
+                      Alasan Pembatalan
+                    </th>
+                  )}
                   <th className="px-4 py-3 font-semibold text-slate-600">
                     Produk
                   </th>
@@ -184,6 +189,22 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
                     <td className="px-4 py-3">
                       <StatusBadge category={order.statusCategory} />
                     </td>
+                    {status === 'cancelled' && (
+                      <td className="px-4 py-3">
+                        {order.cancellationReason ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700">
+                            <AlertTriangle className="h-3 w-3 flex-shrink-0" />
+                            <span className="max-w-[180px] truncate">
+                              {order.cancellationReason}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-xs text-slate-400">
+                            Tidak ada keterangan
+                          </span>
+                        )}
+                      </td>
+                    )}
                     <td className="px-4 py-3">
                       <div className="max-w-[200px]">
                         <p className="truncate font-medium text-slate-900">
