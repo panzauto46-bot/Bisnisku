@@ -192,9 +192,9 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
                     {status === 'cancelled' && (
                       <td className="px-4 py-3">
                         {order.cancellationReason ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700">
-                            <AlertTriangle className="h-3 w-3 flex-shrink-0" />
-                            <span className="max-w-[180px] truncate">
+                          <span className="inline-flex max-w-[260px] items-start gap-1.5 rounded-md bg-red-50 px-2 py-1 text-[11px] font-medium leading-relaxed text-red-700">
+                            <AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0" />
+                            <span className="whitespace-normal break-words">
                               {order.cancellationReason}
                             </span>
                           </span>
