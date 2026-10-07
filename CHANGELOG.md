@@ -64,6 +64,53 @@ angka persisnya diambil langsung dari settlement report.
 
 ---
 
+### Sinkronisasi Antar-File & Perbaikan Label - October 8, 2026
+
+#### Problem
+Panel "Penghasilan Bersih Platform" menampilkan baris **"Ongkir Dibayar
+Pembeli Rp 6.713.185"**, padahal panel "Rincian Potongan Platform" menampilkan
+"Ongkos Kirim Dibayar Pembeli Rp 854.985". Angka beda jauh, label hampir sama
+— terlihat tidak sinkron.
+
+Akar masalahnya **salah pasang label**: baris tersebut sebenarnya berisi
+`shipping_paid_to_courier` (ongkir ke jasa kirim), bukan ongkir yang dibayar
+pembeli. Angka aslinya adalah Rp 839.185 — hampir sama dengan file pesanan.
+
+#### Fixed
+- 🔄 Baris "Ongkir Dibayar Pembeli" sekarang memakai field yang benar
+  (`shipping_paid_by_buyer` = Rp 839.185)
+- 🆕 Baris baru **"Ongkir Dibayarkan ke Jasa Kirim"** (Rp 6.713.185) —
+  total yang dibayarkan platform ke kurir, disubsidi gabungan gratis ongkir
+  platform (Rp 5,4 juta) + ongkir pembeli
+
+#### Added — Section "Cek Silang ke File Pesanan"
+Karena kedua panel menghitung basis order berbeda (464 order Selesai vs 515
+baris settlement), selisih totalnya selalu ada dan sebelumnya tidak
+terjelaskan. Section baru ini **membatasi perbandingan ke 409 order yang ada
+di kedua file** sehingga angkanya comparable:
+- 🆕 `getEarningsReconciliation()` di `earnings.service.ts` — inner join
+  orders × order_earnings, status Selesai
+- 🆕 `mismatchCount` — jumlah order yang total dibayarnya beda antar file
+- 🆕 Tiga metrik: Ongkir Dibayar Pembeli, Total Dibayar Pembeli, badge
+  "✓ Sinkron / ⚠ Ada selisih" + penjelasan penyebab
+
+#### Added — Penjelasan basis di panel
+- 🆕 Panel Rincian Potongan: catatan bahwa angka ongkirnya **estimasi** dari
+  file pesanan, dan mengarah ke panel Penghasilan untuk angka real + cek silang
+- 🆕 Panel Penghasilan: penjelasan dari file mana tiap angka berasal
+
+#### Verified — Data Asli (409 order Selesai di kedua file)
+- **Ongkir Dibayar Pembeli: Rp 687.885 = Rp 687.885 — cocok persis, 0 selisih**
+- Total Dibayar Pembeli: file pesanan Rp 35.362.975 vs settlement
+  Rp 35.855.348 (selisih Rp 492.373)
+- Hanya **8 dari 409 order** (2%) yang totalnya beda — semuanya tercatan
+  Rp 0 di file pesanan tapi ada pembayarannya di settlement (perbedaan cara
+  pencatatan export, bukan data hilang)
+- Badge menampilkan "✓ Sinkron" karena ongkir cocok persis & rate mismatch
+  di bawah 5%
+
+---
+
 ### Backlog — Prioritas PR Berikutnya (Oct 8, 2026)
 
 Hasil audit setelah fitur export selesai. Daftar ini adalah kandidat PR

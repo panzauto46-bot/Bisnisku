@@ -144,6 +144,16 @@ export function DiscountBreakdownCard({
                     pendapatan.
                   </span>
                 </li>
+                <li className="flex gap-2">
+                  <span className="mt-0.5 flex-shrink-0 text-amber-500">•</span>
+                  <span>
+                    Ongkir di sini adalah <strong>estimasi</strong> dari file
+                    pesanan. Untuk angka real yang dibayarkan ke jasa kirim,
+                    lihat panel <strong>Penghasilan Bersih Platform</strong> —
+                    ada bagian <em>Cek Silang</em> yang membandingkan kedua
+                    file langsung.
+                  </span>
+                </li>
               </ul>
             </div>
           </div>

@@ -74,6 +74,7 @@ export interface EarningsStats {
   totalEarnings: number
   totalProductPrice: number
   totalRefundToBuyer: number
+  totalShippingPaidByBuyer: number
   totalShippingPaidToCourier: number
   totalFreeShippingFromPlatform: number
   totalReturnShippingFee: number
@@ -102,6 +103,27 @@ export interface EarningsStats {
   rowCount: number
   /** Settlement rows whose order number is not in the orders table */
   unmatchedCount: number
+}
+
+/**
+ * Cross-check between the two imported files, computed only over orders that
+ * exist in BOTH. Answers "are the two files in sync?" — the panels above
+ * count different order sets (completed orders vs settlement rows), so
+ * without this comparison a difference in totals is unexplained.
+ */
+export interface EarningsReconciliation {
+  /** Orders present in the orders table AND the settlement file */
+  matchedCount: number
+  /**
+   * Orders whose buyer-paid amount disagrees between the files. A few is
+   * normal — the order export can record 0 while the settlement report
+   * already has the payment.
+   */
+  mismatchCount: number
+  /** Shipping paid by buyer: file pesanan vs file penghasilan */
+  shippingPaidByBuyer: { orders: number; earnings: number }
+  /** Total payment (file pesanan) vs amount buyer paid (file penghasilan) */
+  totalPayment: { orders: number; earnings: number }
 }
 
 export interface EarningsImportResult {
