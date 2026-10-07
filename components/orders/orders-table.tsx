@@ -323,7 +323,7 @@ function EmptyState({ status }: { status: OrderStatus }) {
       <div className="text-center">
         <h3 className="font-semibold text-slate-900">{title}</h3>
         <p className="mt-1 text-sm text-slate-500">
-          Import file Excel dari Shopee untuk melihat data pesanan
+          Import file Excel dari marketplace untuk melihat data pesanan
         </p>
       </div>
       <a href="/import">

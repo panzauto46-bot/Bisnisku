@@ -1,6 +1,6 @@
 # 🚀 BisnisKu
 
-> Professional Dashboard for Shopee Order Management & Analytics
+> Professional Dashboard for Marketplace Order Management & Analytics
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
@@ -11,7 +11,7 @@
 
 ## 📖 Overview
 
-**BisnisKu** adalah aplikasi desktop berbasis web yang dirancang untuk membantu Shopee sellers mengelola pesanan mereka dengan mudah. Aplikasi ini mengotomatisasi proses analisis data dari file Excel export Shopee dengan visualisasi yang profesional dan interaktif.
+**BisnisKu** adalah aplikasi desktop berbasis web yang dirancang untuk membantu marketplace sellers mengelola pesanan mereka dengan mudah. Aplikasi ini mengotomatisasi proses analisis data dari file Excel export marketplace dengan visualisasi yang profesional dan interaktif.
 
 ### ✨ Key Features
 
@@ -19,7 +19,7 @@
 - 📦 **Order Management** - Kelola semua pesanan dalam satu tempat
 - 🎯 **Smart Filtering** - Filter otomatis berdasarkan status pesanan
 - 💰 **Profit Analysis** - Hitung profit bersih per produk
-- 📤 **Easy Import** - Drag & drop Excel file dari Shopee
+- 📤 **Easy Import** - Drag & drop Excel file dari Marketplace
 - 🎨 **Beautiful UI** - Modern interface dengan smooth animations
 - ⚡ **Fast Performance** - Handle 1000+ orders dengan mudah
 - 🔒 **Privacy First** - Semua data tersimpan lokal (SQLite)
@@ -34,9 +34,9 @@
 
 ## 🎯 Target Users
 
-- Shopee sellers yang ingin analisis data lebih mudah
+- Marketplace sellers yang ingin analisis data lebih mudah
 - Small to medium business owners
-- Siapa saja yang butuh dashboard profesional untuk data Shopee
+- Siapa saja yang butuh dashboard profesional untuk data marketplace
 
 ---
 
@@ -178,12 +178,12 @@ pnpm dev
 
 ## 📖 Usage Guide
 
-### 1. Import Data dari Shopee
+### 1. Import Data dari Marketplace
 
-1. Login ke **Shopee Seller Center**
+1. Login ke **Marketplace Seller Center**
 2. Pergi ke **My Income** → **My Orders**
 3. Klik **Export** → Pilih date range → Download Excel
-4. Buka **ShopeeFlow**
+4. Buka **BisnisKu**
 5. Klik **Import Data** atau drag & drop file Excel
 6. Wait for processing (biasanya < 5 detik)
 7. Data siap digunakan! 🎉
@@ -231,19 +231,18 @@ Klik pada row order untuk melihat detail lengkap (49 fields):
 ## 📁 Project Structure
 
 ```
-shopeeflow/
-├── src/
-│   ├── app/              # Next.js pages & API routes
-│   ├── components/       # React components
-│   ├── db/               # Database layer
-│   ├── services/         # Business logic
-│   ├── hooks/            # Custom hooks
-│   ├── utils/            # Utilities
-│   └── types/            # TypeScript types
-├── public/               # Static assets
-├── data/                 # SQLite database
-├── docs/                 # Documentation
-└── tests/                # Test files
+bisnisku/
+├── app/                 # Next.js pages & API routes
+├── components/          # React components
+├── db/                  # Database layer (schema + connection)
+├── services/            # Business logic (parser, orders, profit)
+├── hooks/               # Custom hooks
+├── utils/               # Utilities (currency, date, cn)
+├── types/               # TypeScript types
+├── scripts/             # DB setup & import scripts
+├── public/              # Static assets
+├── data/                # SQLite database (gitignored)
+└── docs/                # Documentation
 ```
 
 Detail lengkap: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
@@ -444,7 +443,7 @@ pnpm type-check
 - [Drizzle ORM](https://orm.drizzle.team/) - Database ORM
 
 ### Inspiration
-- Shopee Seller Center
+- Marketplace Seller Center dashboards
 - Modern analytics dashboards
 - E-commerce management tools
 
@@ -469,7 +468,7 @@ MIT License - see [LICENSE](./LICENSE) for details
 ## 🙏 Acknowledgments
 
 Terima kasih kepada:
-- Shopee untuk platform yang luar biasa
+- Marketplace platform yang digunakan seller Indonesia
 - Open source community
 - All contributors
 
@@ -496,7 +495,7 @@ Setelah Phase 1 selesai, kami akan fokus pada:
 
 <div align="center">
 
-**Made with ❤️ for Shopee Sellers**
+**Made with ❤️ for Marketplace Sellers**
 
 [⭐ Star this project](https://github.com/panzauto46-bot/Bisnisku) | [🐛 Report Bug](https://github.com/panzauto46-bot/Bisnisku/issues) | [💡 Request Feature](https://github.com/panzauto46-bot/Bisnisku/issues)
 

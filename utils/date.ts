@@ -2,9 +2,9 @@ import { format, parseISO, isValid } from 'date-fns'
 import { id as idLocale } from 'date-fns/locale'
 
 /**
- * Parse date string from Shopee export (e.g. "2026-09-06 00:13")
+ * Parse date string from marketplace export (e.g. "2026-09-06 00:13")
  */
-export function parseShopeeDate(dateString: string | null | undefined): Date | null {
+export function parseMarketplaceDate(dateString: string | null | undefined): Date | null {
   if (!dateString || typeof dateString !== 'string') {
     return null
   }
@@ -28,7 +28,7 @@ export function formatDate(
   dateString: string | null | undefined,
   formatStr: string = 'd MMM yyyy'
 ): string {
-  const date = parseShopeeDate(dateString)
+  const date = parseMarketplaceDate(dateString)
 
   if (!date) {
     return '-'
@@ -48,7 +48,7 @@ export function formatDateTime(dateString: string | null | undefined): string {
  * Get relative time (e.g. "2 hari yang lalu")
  */
 export function getRelativeTime(dateString: string | null | undefined): string {
-  const date = parseShopeeDate(dateString)
+  const date = parseMarketplaceDate(dateString)
 
   if (!date) {
     return '-'
@@ -71,7 +71,7 @@ export function getRelativeTime(dateString: string | null | undefined): string {
  * Check if order is urgent (must be shipped within 24h)
  */
 export function isUrgentOrder(deadlineString: string | null | undefined): boolean {
-  const deadline = parseShopeeDate(deadlineString)
+  const deadline = parseMarketplaceDate(deadlineString)
 
   if (!deadline) return false
 

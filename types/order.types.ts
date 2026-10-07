@@ -4,59 +4,63 @@
 export type OrderStatus = 'all' | 'pending' | 'shipped' | 'completed' | 'cancelled'
 
 /**
- * Raw order data as imported from Shopee Excel export (49 columns)
+ * Raw order data as imported from marketplace Excel export (49 columns)
+ *
+ * NOTE: This interface uses generic field names. The actual Excel header
+ * strings are mapped in `excel-parser.service.ts` (the file adapter),
+ * which is the only place that references the export format directly.
  */
 export interface RawOrder {
-  'No. Pesanan': string
-  'Status Pesanan': string
-  'Alasan Pembatalan': string | null
-  'Status Pembatalan/ Pengembalian': string | null
-  'No. Resi': string | null
-  'Opsi Pengiriman': string | null
-  'Antar ke counter/ pick-up': string | null
-  'Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)': string | null
-  'Waktu Pengiriman Diatur': string | null
-  'Waktu Pesanan Dibuat': string | null
-  'Waktu Pembayaran Dilakukan': string | null
-  'Tipe Pesanan': string | null
-  'Metode Pembayaran': string | null
-  'SKU Induk': string | null
-  'Nama Produk': string
-  'Nomor Referensi SKU': string | null
-  'Nama Variasi': string | null
-  'Harga Awal': number
-  'Harga Setelah Diskon': number
-  'Jumlah': number
-  'Returned quantity': number
-  'Subtotal Pesanan': number
-  'Total Diskon': number
-  'Diskon Dari Penjual': number
-  'Diskon Dari Shopee': number
-  'Berat Produk': string | null
-  'Jumlah Produk di Pesan': number
-  'Total Berat': string | null
-  'Voucher Ditanggung Penjual': number
-  'Cashback Koin': number
-  'Voucher Ditanggung Shopee': number
-  'Paket Diskon': string | null
-  'Paket Diskon (Diskon dari Shopee)': number
-  'Paket Diskon (Diskon dari Penjual)': number
-  'Potongan Koin Shopee': number
-  'Diskon Kartu Kredit': number
-  'Ongkos Kirim Dibayar oleh Pembeli': number
-  'Estimasi Potongan Biaya Pengiriman': number
-  'Ongkos Kirim Pengembalian Barang': number
-  'Total Pembayaran': number
-  'Perkiraan Ongkos Kirim': number | string
-  'Catatan dari Pembeli': string | null
-  'Catatan': string | null
-  'Username (Pembeli)': string
-  'Nama Penerima': string
-  'No. Telepon': string
-  'Alamat Pengiriman': string | null
-  'Kota/Kabupaten': string | null
-  'Provinsi': string | null
-  'Waktu Pesanan Selesai': string | null
+  orderNumber: string
+  status: string
+  cancellationReason: string | null
+  cancellationStatus: string | null
+  trackingNumber: string | null
+  shippingOption: string | null
+  pickupType: string | null
+  shipByDeadline: string | null
+  shippingTimeSet: string | null
+  orderCreatedAt: string | null
+  paymentTime: string | null
+  orderType: string | null
+  paymentMethod: string | null
+  parentSku: string | null
+  productName: string
+  skuReference: string | null
+  variantName: string | null
+  originalPrice: number
+  discountedPrice: number
+  quantity: number
+  returnedQuantity: number
+  subtotal: number
+  totalDiscount: number
+  sellerDiscount: number
+  platformDiscount: number
+  productWeight: string | null
+  totalProductOrdered: number
+  totalWeight: string | null
+  sellerVoucher: number
+  coinCashback: number
+  platformVoucher: number
+  discountPackage: string | null
+  packageDiscountPlatform: number
+  packageDiscountSeller: number
+  platformCoinDeduction: number
+  creditCardDiscount: number
+  shippingFeePaidByBuyer: number
+  estimatedShippingDiscount: number
+  returnShippingFee: number
+  totalPayment: number
+  estimatedShipping: number
+  buyerNote: string | null
+  sellerNote: string | null
+  buyerUsername: string
+  recipientName: string
+  phoneNumber: string
+  shippingAddress: string | null
+  city: string | null
+  province: string | null
+  completedAt: string | null
 }
 
 /**
@@ -88,17 +92,17 @@ export interface Order {
   subtotal: number | null
   totalDiscount: number | null
   sellerDiscount: number | null
-  shopeeDiscount: number | null
+  platformDiscount: number | null
   productWeight: string | null
   totalProductOrdered: number | null
   totalWeight: string | null
   sellerVoucher: number | null
   coinCashback: number | null
-  shopeeVoucher: number | null
+  platformVoucher: number | null
   discountPackage: string | null
-  packageDiscountShopee: number | null
+  packageDiscountPlatform: number | null
   packageDiscountSeller: number | null
-  shopeeCoinDeduction: number | null
+  platformCoinDeduction: number | null
   creditCardDiscount: number | null
   shippingFeePaidByBuyer: number | null
   estimatedShippingDiscount: number | null

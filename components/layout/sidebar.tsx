@@ -84,7 +84,7 @@ export function Sidebar() {
         </div>
         <div>
           <h1 className="text-lg font-bold text-slate-900">BisnisKu</h1>
-          <p className="text-xs text-slate-500">Shopee Dashboard</p>
+          <p className="text-xs text-slate-500">Marketplace Dashboard</p>
         </div>
       </div>
 

@@ -8,9 +8,9 @@
 
 ## 🎯 Current Status: WORKING WITH REAL DATA ✅
 
-Aplikasi sudah berjalan dengan **DATA ASLI** dari file Excel Shopee Anda
+Aplikasi sudah berjalan dengan **DATA ASLI** dari file Excel marketplace Anda
 dan sudah ter-push ke GitHub. Ini BUKAN data dummy/mockup — semua angka
-berasal dari file `semua.xlsx` yang Anda export dari Shopee Seller Center.
+berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 
 ### 🐙 Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
@@ -65,6 +65,25 @@ alih-alih implementasi asli di root `app/`.
 - ✅ Production build pass (18 routes)
 
 **Result**: Dashboard sekarang menampilkan 100% data asli dari Excel.
+
+---
+
+## 🔒 Trademark Safety Rebrand (Oct 7, 2026)
+
+**Issue**: Aplikasi masih mengandung nama brand "Shopee" di banyak tempat,
+yang berisiko kena hak cipta/sanksi trademark.
+
+**Solution**:
+- ✅ Semua teks UI diganti jadi generik ("Marketplace Dashboard",
+  "Diskon dari Platform", "Marketplace Seller Center", dll.)
+- ✅ `RawOrder` type di-refactor pakai nama field generik (bukan header Excel)
+- ✅ String header Excel diisolasi di satu file adapter
+  (`excel-parser.service.ts`) — satu-satunya tempat yang menyentuh format export
+- ✅ Kolom DB di-rename: `shopee_*` → `platform_*`
+- ✅ Database di-recreate & data re-import: 670 orders (verified sama persis)
+- ✅ Production build pass, type-check clean
+
+**Result**: Tidak ada lagi nama brand marketplace di UI maupun kode domain.
 
 ---
 
@@ -255,7 +274,7 @@ db/
 
 utils/
 ├── format.ts                     # Currency/number formatting
-└── date.ts                       # Date parsing (Shopee format)
+└── date.ts                       # Date parsing (marketplace format)
 
 types/
 └── order.types.ts                # All TypeScript types

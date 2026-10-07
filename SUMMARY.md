@@ -8,10 +8,10 @@
 
 ## 🎯 Project Overview
 
-**BisnisKu** adalah aplikasi desktop dashboard profesional untuk Shopee sellers yang ingin mengelola dan menganalisis pesanan mereka dengan mudah, visual, dan efisien.
+**BisnisKu** adalah aplikasi desktop dashboard profesional untuk marketplace sellers yang ingin mengelola dan menganalisis pesanan mereka dengan mudah, visual, dan efisien.
 
 ### Problem yang Diselesaikan
-- ❌ Susah analisis data Excel export dari Shopee
+- ❌ Susah analisis data Excel export dari marketplace
 - ❌ Tidak ada visualisasi yang mudah dipahami
 - ❌ Sulit hitung profit bersih (banyak komponen: diskon, ongkir, fee)
 - ❌ Manual filtering data memakan waktu
@@ -57,7 +57,7 @@ Dari file sample `semua.xlsx`:
 - Subtotal Pesanan
 - Total Diskon
 - Diskon Dari Penjual
-- Diskon Dari Shopee
+- Diskon Dari Platform
 - Voucher, Cashback, Paket Diskon
 
 #### 4. Shipping
@@ -376,18 +376,18 @@ Success:    #10B981 (Green)
 
 ### Project Structure
 ```
-shopeeflow/
-├── src/
-│   ├── app/              # Pages & API
-│   ├── components/       # React components
-│   ├── db/               # Database
-│   ├── services/         # Business logic
-│   ├── hooks/            # Custom hooks
-│   ├── utils/            # Helpers
-│   └── types/            # TypeScript types
-├── public/               # Assets
-├── data/                 # SQLite DB
-└── docs/                 # Documentation
+bisnisku/
+├── app/                 # Pages & API
+├── components/          # React components
+├── db/                  # Database
+├── services/            # Business logic
+├── hooks/               # Custom hooks
+├── utils/               # Helpers
+├── types/               # TypeScript types
+├── scripts/             # DB setup & import scripts
+├── public/              # Assets
+├── data/                # SQLite DB (gitignored)
+└── docs/                # Documentation
 ```
 
 ### Key Dependencies
@@ -453,7 +453,7 @@ shopeeflow/
 
 ### What Makes This Project Special
 
-1. **Data-Driven**: Actual Shopee export data structure
+1. **Data-Driven**: Actual marketplace export data structure
 2. **User-Focused**: Solves real seller pain points
 3. **Professional**: Modern UI/UX with animations
 4. **Complete**: End-to-end solution (import → analyze → profit)
@@ -474,7 +474,7 @@ shopeeflow/
 ## 🎯 Success Criteria
 
 ### Phase 1.0 (MVP) Success = 
-- ✅ Can import Excel file from Shopee
+- ✅ Can import Excel file from marketplace
 - ✅ Can view all orders in table
 - ✅ Can filter by 5 status categories
 - ✅ Can search orders

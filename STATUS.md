@@ -89,6 +89,20 @@ lama dengan data dummy ("1,248", "#ORD-9001").
 
 ---
 
+## 🔒 Trademark Safety Rebrand (Oct 7, 2026)
+
+**Problem**: Nama brand "Shopee" bertebaran di UI & kode → risiko hak cipta.
+
+**Fix**:
+- ✅ UI: "Shopee Dashboard" → "Marketplace Dashboard"
+- ✅ Labels: "Diskon dari Shopee" → "Diskon dari Platform", dst.
+- ✅ Import page: "Shopee Seller Center" → "Marketplace Seller Center"
+- ✅ `RawOrder` pakai nama generik; header Excel hanya di 1 adapter file
+- ✅ Kolom DB: `shopee_discount` → `platform_discount`, dll.
+- ✅ Re-import 670 orders, semua angka verified sama
+
+---
+
 ## 📊 Phase Progress
 
 ### Phase 1.0 - MVP: 98% ✅

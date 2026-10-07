@@ -2,70 +2,88 @@ import * as XLSX from 'xlsx'
 import type { RawOrder } from '@/types/order.types'
 
 /**
- * Column mapping from Shopee Indonesian headers to our field names
+ * Column mapping from the marketplace Excel export (Indonesian headers)
+ * to our generic internal field names.
+ *
+ * NOTE: The keys are the ACTUAL column headers in the export file and must
+ * match exactly in order to parse the file correctly. This file is the only
+ * place in the codebase that references the export format directly — every
+ * other module works with the generic `RawOrder` shape.
  */
 const COLUMN_MAPPING: Record<string, keyof RawOrder> = {
-  'No. Pesanan': 'No. Pesanan',
-  'Status Pesanan': 'Status Pesanan',
-  'Alasan Pembatalan': 'Alasan Pembatalan',
-  'Status Pembatalan/ Pengembalian': 'Status Pembatalan/ Pengembalian',
-  'No. Resi': 'No. Resi',
-  'Opsi Pengiriman': 'Opsi Pengiriman',
-  'Antar ke counter/ pick-up': 'Antar ke counter/ pick-up',
+  'No. Pesanan': 'orderNumber',
+  'Status Pesanan': 'status',
+  'Alasan Pembatalan': 'cancellationReason',
+  'Status Pembatalan/ Pengembalian': 'cancellationStatus',
+  'No. Resi': 'trackingNumber',
+  'Opsi Pengiriman': 'shippingOption',
+  'Antar ke counter/ pick-up': 'pickupType',
   'Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)':
-    'Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)',
-  'Waktu Pengiriman Diatur': 'Waktu Pengiriman Diatur',
-  'Waktu Pesanan Dibuat': 'Waktu Pesanan Dibuat',
-  'Waktu Pembayaran Dilakukan': 'Waktu Pembayaran Dilakukan',
-  'Tipe Pesanan': 'Tipe Pesanan',
-  'Metode Pembayaran': 'Metode Pembayaran',
-  'SKU Induk': 'SKU Induk',
-  'Nama Produk': 'Nama Produk',
-  'Nomor Referensi SKU': 'Nomor Referensi SKU',
-  'Nama Variasi': 'Nama Variasi',
-  'Harga Awal': 'Harga Awal',
-  'Harga Setelah Diskon': 'Harga Setelah Diskon',
-  'Jumlah': 'Jumlah',
-  'Returned quantity': 'Returned quantity',
-  'Subtotal Pesanan': 'Subtotal Pesanan',
-  'Total Diskon': 'Total Diskon',
-  'Diskon Dari Penjual': 'Diskon Dari Penjual',
-  'Diskon Dari Shopee': 'Diskon Dari Shopee',
-  'Berat Produk': 'Berat Produk',
-  'Jumlah Produk di Pesan': 'Jumlah Produk di Pesan',
-  'Total Berat': 'Total Berat',
-  'Voucher Ditanggung Penjual': 'Voucher Ditanggung Penjual',
-  'Cashback Koin': 'Cashback Koin',
-  'Voucher Ditanggung Shopee': 'Voucher Ditanggung Shopee',
-  'Paket Diskon': 'Paket Diskon',
-  'Paket Diskon (Diskon dari Shopee)': 'Paket Diskon (Diskon dari Shopee)',
-  'Paket Diskon (Diskon dari Penjual)': 'Paket Diskon (Diskon dari Penjual)',
-  'Potongan Koin Shopee': 'Potongan Koin Shopee',
-  'Diskon Kartu Kredit': 'Diskon Kartu Kredit',
-  'Ongkos Kirim Dibayar oleh Pembeli': 'Ongkos Kirim Dibayar oleh Pembeli',
-  'Estimasi Potongan Biaya Pengiriman': 'Estimasi Potongan Biaya Pengiriman',
-  'Ongkos Kirim Pengembalian Barang': 'Ongkos Kirim Pengembalian Barang',
-  'Total Pembayaran': 'Total Pembayaran',
-  'Perkiraan Ongkos Kirim': 'Perkiraan Ongkos Kirim',
-  'Catatan dari Pembeli': 'Catatan dari Pembeli',
-  'Catatan': 'Catatan',
-  'Username (Pembeli)': 'Username (Pembeli)',
-  'Nama Penerima': 'Nama Penerima',
-  'No. Telepon': 'No. Telepon',
-  'Alamat Pengiriman': 'Alamat Pengiriman',
-  'Kota/Kabupaten': 'Kota/Kabupaten',
-  'Provinsi': 'Provinsi',
-  'Waktu Pesanan Selesai': 'Waktu Pesanan Selesai',
+    'shipByDeadline',
+  'Waktu Pengiriman Diatur': 'shippingTimeSet',
+  'Waktu Pesanan Dibuat': 'orderCreatedAt',
+  'Waktu Pembayaran Dilakukan': 'paymentTime',
+  'Tipe Pesanan': 'orderType',
+  'Metode Pembayaran': 'paymentMethod',
+  'SKU Induk': 'parentSku',
+  'Nama Produk': 'productName',
+  'Nomor Referensi SKU': 'skuReference',
+  'Nama Variasi': 'variantName',
+  'Harga Awal': 'originalPrice',
+  'Harga Setelah Diskon': 'discountedPrice',
+  'Jumlah': 'quantity',
+  'Returned quantity': 'returnedQuantity',
+  'Subtotal Pesanan': 'subtotal',
+  'Total Diskon': 'totalDiscount',
+  'Diskon Dari Penjual': 'sellerDiscount',
+  'Diskon Dari Shopee': 'platformDiscount',
+  'Berat Produk': 'productWeight',
+  'Jumlah Produk di Pesan': 'totalProductOrdered',
+  'Total Berat': 'totalWeight',
+  'Voucher Ditanggung Penjual': 'sellerVoucher',
+  'Cashback Koin': 'coinCashback',
+  'Voucher Ditanggung Shopee': 'platformVoucher',
+  'Paket Diskon': 'discountPackage',
+  'Paket Diskon (Diskon dari Shopee)': 'packageDiscountPlatform',
+  'Paket Diskon (Diskon dari Penjual)': 'packageDiscountSeller',
+  'Potongan Koin Shopee': 'platformCoinDeduction',
+  'Diskon Kartu Kredit': 'creditCardDiscount',
+  'Ongkos Kirim Dibayar oleh Pembeli': 'shippingFeePaidByBuyer',
+  'Estimasi Potongan Biaya Pengiriman': 'estimatedShippingDiscount',
+  'Ongkos Kirim Pengembalian Barang': 'returnShippingFee',
+  'Total Pembayaran': 'totalPayment',
+  'Perkiraan Ongkos Kirim': 'estimatedShipping',
+  'Catatan dari Pembeli': 'buyerNote',
+  'Catatan': 'sellerNote',
+  'Username (Pembeli)': 'buyerUsername',
+  'Nama Penerima': 'recipientName',
+  'No. Telepon': 'phoneNumber',
+  'Alamat Pengiriman': 'shippingAddress',
+  'Kota/Kabupaten': 'city',
+  'Provinsi': 'province',
+  'Waktu Pesanan Selesai': 'completedAt',
 }
 
 /**
- * Required columns that must exist in the file
+ * Required columns (export headers) that must exist in the file
  */
 const REQUIRED_COLUMNS = [
   'No. Pesanan',
   'Status Pesanan',
   'Nama Produk',
   'Total Pembayaran',
+]
+
+/**
+ * Fields that must be trimmed strings
+ */
+const STRING_FIELDS: (keyof RawOrder)[] = [
+  'orderNumber',
+  'status',
+  'productName',
+  'buyerUsername',
+  'recipientName',
+  'phoneNumber',
 ]
 
 /**
@@ -139,7 +157,7 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedExcelResult {
       }
     }
 
-    // Validate required columns
+    // Validate required columns (check against raw export headers)
     const headers = Object.keys(rows[0])
     const missingColumns = REQUIRED_COLUMNS.filter(
       (col) => !headers.includes(col)
@@ -157,126 +175,32 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedExcelResult {
       }
     }
 
-    // Map each row to RawOrder
-    const orders: RawOrder[] = rows.map((row, index) => {
-      const getOrderValue = (header: string): any => {
-        // Try exact match first, then try mapping
-        if (header in row) return row[header]
-        return null
+    // Map each row to RawOrder using the column mapping
+    const orders: RawOrder[] = rows.map((row) => {
+      // Build a lookup from export header → cell value
+      const getValueByHeader = (header: string): any =>
+        header in row ? row[header] : null
+
+      const mapped: Record<string, any> = {}
+
+      for (const [excelHeader, fieldName] of Object.entries(COLUMN_MAPPING)) {
+        const rawValue = getValueByHeader(excelHeader)
+
+        if (STRING_FIELDS.includes(fieldName)) {
+          mapped[fieldName] = String(rawValue || '').trim()
+        } else if (typeof rawValue === 'number' || isNumericField(fieldName)) {
+          mapped[fieldName] = parseNumeric(rawValue)
+        } else {
+          mapped[fieldName] = parseString(rawValue)
+        }
       }
 
-      return {
-        'No. Pesanan': String(getOrderValue('No. Pesanan') || '').trim(),
-        'Status Pesanan': String(
-          getOrderValue('Status Pesanan') || ''
-        ).trim(),
-        'Alasan Pembatalan': parseString(
-          getOrderValue('Alasan Pembatalan')
-        ),
-        'Status Pembatalan/ Pengembalian': parseString(
-          getOrderValue('Status Pembatalan/ Pengembalian')
-        ),
-        'No. Resi': parseString(getOrderValue('No. Resi')),
-        'Opsi Pengiriman': parseString(getOrderValue('Opsi Pengiriman')),
-        'Antar ke counter/ pick-up': parseString(
-          getOrderValue('Antar ke counter/ pick-up')
-        ),
-        'Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)':
-          parseString(
-            getOrderValue(
-              'Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)'
-            )
-          ),
-        'Waktu Pengiriman Diatur': parseString(
-          getOrderValue('Waktu Pengiriman Diatur')
-        ),
-        'Waktu Pesanan Dibuat': parseString(
-          getOrderValue('Waktu Pesanan Dibuat')
-        ),
-        'Waktu Pembayaran Dilakukan': parseString(
-          getOrderValue('Waktu Pembayaran Dilakukan')
-        ),
-        'Tipe Pesanan': parseString(getOrderValue('Tipe Pesanan')),
-        'Metode Pembayaran': parseString(getOrderValue('Metode Pembayaran')),
-        'SKU Induk': parseString(getOrderValue('SKU Induk')),
-        'Nama Produk': String(getOrderValue('Nama Produk') || '').trim(),
-        'Nomor Referensi SKU': parseString(
-          getOrderValue('Nomor Referensi SKU')
-        ),
-        'Nama Variasi': parseString(getOrderValue('Nama Variasi')),
-        'Harga Awal': parseNumeric(getOrderValue('Harga Awal')),
-        'Harga Setelah Diskon': parseNumeric(
-          getOrderValue('Harga Setelah Diskon')
-        ),
-        'Jumlah': parseNumeric(getOrderValue('Jumlah')),
-        'Returned quantity': parseNumeric(getOrderValue('Returned quantity')),
-        'Subtotal Pesanan': parseNumeric(getOrderValue('Subtotal Pesanan')),
-        'Total Diskon': parseNumeric(getOrderValue('Total Diskon')),
-        'Diskon Dari Penjual': parseNumeric(
-          getOrderValue('Diskon Dari Penjual')
-        ),
-        'Diskon Dari Shopee': parseNumeric(
-          getOrderValue('Diskon Dari Shopee')
-        ),
-        'Berat Produk': parseString(getOrderValue('Berat Produk')),
-        'Jumlah Produk di Pesan': parseNumeric(
-          getOrderValue('Jumlah Produk di Pesan')
-        ),
-        'Total Berat': parseString(getOrderValue('Total Berat')),
-        'Voucher Ditanggung Penjual': parseNumeric(
-          getOrderValue('Voucher Ditanggung Penjual')
-        ),
-        'Cashback Koin': parseNumeric(getOrderValue('Cashback Koin')),
-        'Voucher Ditanggung Shopee': parseNumeric(
-          getOrderValue('Voucher Ditanggung Shopee')
-        ),
-        'Paket Diskon': parseString(getOrderValue('Paket Diskon')),
-        'Paket Diskon (Diskon dari Shopee)': parseNumeric(
-          getOrderValue('Paket Diskon (Diskon dari Shopee)')
-        ),
-        'Paket Diskon (Diskon dari Penjual)': parseNumeric(
-          getOrderValue('Paket Diskon (Diskon dari Penjual)')
-        ),
-        'Potongan Koin Shopee': parseNumeric(
-          getOrderValue('Potongan Koin Shopee')
-        ),
-        'Diskon Kartu Kredit': parseNumeric(
-          getOrderValue('Diskon Kartu Kredit')
-        ),
-        'Ongkos Kirim Dibayar oleh Pembeli': parseNumeric(
-          getOrderValue('Ongkos Kirim Dibayar oleh Pembeli')
-        ),
-        'Estimasi Potongan Biaya Pengiriman': parseNumeric(
-          getOrderValue('Estimasi Potongan Biaya Pengiriman')
-        ),
-        'Ongkos Kirim Pengembalian Barang': parseNumeric(
-          getOrderValue('Ongkos Kirim Pengembalian Barang')
-        ),
-        'Total Pembayaran': parseNumeric(getOrderValue('Total Pembayaran')),
-        'Perkiraan Ongkos Kirim': parseNumeric(
-          getOrderValue('Perkiraan Ongkos Kirim')
-        ),
-        'Catatan dari Pembeli': parseString(
-          getOrderValue('Catatan dari Pembeli')
-        ),
-        'Catatan': parseString(getOrderValue('Catatan')),
-        'Username (Pembeli)': String(
-          getOrderValue('Username (Pembeli)') || ''
-        ).trim(),
-        'Nama Penerima': String(getOrderValue('Nama Penerima') || '').trim(),
-        'No. Telepon': String(getOrderValue('No. Telepon') || '').trim(),
-        'Alamat Pengiriman': parseString(getOrderValue('Alamat Pengiriman')),
-        'Kota/Kabupaten': parseString(getOrderValue('Kota/Kabupaten')),
-        'Provinsi': parseString(getOrderValue('Provinsi')),
-        'Waktu Pesanan Selesai': parseString(
-          getOrderValue('Waktu Pesanan Selesai')
-        ),
-      }
+      return mapped as RawOrder
     })
 
     // Filter out rows without order number
     const validOrders = orders.filter(
-      (order) => order['No. Pesanan'] && order['No. Pesanan'] !== ''
+      (order) => order.orderNumber && order.orderNumber !== ''
     )
 
     return {
@@ -299,4 +223,34 @@ export function parseExcelFile(buffer: ArrayBuffer): ParsedExcelResult {
       missingColumns: [],
     }
   }
+}
+
+/**
+ * Whether a generic field should be parsed as a number
+ */
+function isNumericField(field: keyof RawOrder): boolean {
+  const numericFields: (keyof RawOrder)[] = [
+    'originalPrice',
+    'discountedPrice',
+    'quantity',
+    'returnedQuantity',
+    'subtotal',
+    'totalDiscount',
+    'sellerDiscount',
+    'platformDiscount',
+    'totalProductOrdered',
+    'sellerVoucher',
+    'coinCashback',
+    'platformVoucher',
+    'packageDiscountPlatform',
+    'packageDiscountSeller',
+    'platformCoinDeduction',
+    'creditCardDiscount',
+    'shippingFeePaidByBuyer',
+    'estimatedShippingDiscount',
+    'returnShippingFee',
+    'totalPayment',
+    'estimatedShipping',
+  ]
+  return numericFields.includes(field)
 }

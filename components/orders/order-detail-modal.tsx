@@ -191,8 +191,8 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                 negative
               />
               <PriceRow
-                label="Diskon dari Shopee"
-                value={order.shopeeDiscount}
+                label="Diskon dari Platform"
+                value={order.platformDiscount}
                 negative
               />
               <PriceRow
@@ -201,13 +201,13 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
                 negative
               />
               <PriceRow
-                label="Voucher Ditanggung Shopee"
-                value={order.shopeeVoucher}
+                label="Voucher Ditanggung Platform"
+                value={order.platformVoucher}
                 negative
               />
               <PriceRow
-                label="Potongan Koin Shopee"
-                value={order.shopeeCoinDeduction}
+                label="Potongan Koin Platform"
+                value={order.platformCoinDeduction}
                 negative
               />
               <PriceRow

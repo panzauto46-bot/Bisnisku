@@ -8,12 +8,13 @@ import type {
   OrderFilters,
   PaginatedOrders,
   DashboardStats,
+  RawOrder,
 } from '@/types/order.types'
 
 /**
- * Map Shopee status string to our internal status category
+ * Map marketplace status string to our internal status category
  *
- * Shopee statuses found in export:
+ * Marketplace statuses found in export:
  * - "Selesai" → completed
  * - "Batal" / "Dibatalkan" → cancelled
  * - "Sedang Dikirim" → shipped (in transit)
@@ -53,64 +54,62 @@ export function mapStatusCategory(order: Order): OrderStatus {
 /**
  * Convert RawOrder to Order entity
  */
-export function rawToOrder(raw: any): Omit<Order, 'id' | 'createdAt' | 'updatedAt'> {
+export function rawToOrder(
+  raw: RawOrder
+): Omit<Order, 'id' | 'createdAt' | 'updatedAt'> {
   const now = new Date().toISOString()
 
   return {
-    orderNumber: raw['No. Pesanan'] || '',
-    status: raw['Status Pesanan'] || '',
-    cancellationReason: raw['Alasan Pembatalan'] || null,
-    cancellationStatus: raw['Status Pembatalan/ Pengembalian'] || null,
-    trackingNumber: raw['No. Resi'] || null,
-    shippingOption: raw['Opsi Pengiriman'] || null,
-    pickupType: raw['Antar ke counter/ pick-up'] || null,
-    shipByDeadline:
-      raw[
-        'Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)'
-      ] || null,
-    shippingTimeSet: raw['Waktu Pengiriman Diatur'] || null,
-    orderCreatedAt: raw['Waktu Pesanan Dibuat'] || null,
-    paymentTime: raw['Waktu Pembayaran Dilakukan'] || null,
-    orderType: raw['Tipe Pesanan'] || null,
-    paymentMethod: raw['Metode Pembayaran'] || null,
-    parentSku: raw['SKU Induk'] || null,
-    productName: raw['Nama Produk'] || '',
-    skuReference: raw['Nomor Referensi SKU'] || null,
-    variantName: raw['Nama Variasi'] || null,
-    originalPrice: raw['Harga Awal'] || 0,
-    discountedPrice: raw['Harga Setelah Diskon'] || 0,
-    quantity: raw['Jumlah'] || 0,
-    returnedQuantity: raw['Returned quantity'] || 0,
-    subtotal: raw['Subtotal Pesanan'] || 0,
-    totalDiscount: raw['Total Diskon'] || 0,
-    sellerDiscount: raw['Diskon Dari Penjual'] || 0,
-    shopeeDiscount: raw['Diskon Dari Shopee'] || 0,
-    productWeight: raw['Berat Produk'] || null,
-    totalProductOrdered: raw['Jumlah Produk di Pesan'] || 0,
-    totalWeight: raw['Total Berat'] || null,
-    sellerVoucher: raw['Voucher Ditanggung Penjual'] || 0,
-    coinCashback: raw['Cashback Koin'] || 0,
-    shopeeVoucher: raw['Voucher Ditanggung Shopee'] || 0,
-    discountPackage: raw['Paket Diskon'] || null,
-    packageDiscountShopee: raw['Paket Diskon (Diskon dari Shopee)'] || 0,
-    packageDiscountSeller: raw['Paket Diskon (Diskon dari Penjual)'] || 0,
-    shopeeCoinDeduction: raw['Potongan Koin Shopee'] || 0,
-    creditCardDiscount: raw['Diskon Kartu Kredit'] || 0,
-    shippingFeePaidByBuyer: raw['Ongkos Kirim Dibayar oleh Pembeli'] || 0,
-    estimatedShippingDiscount:
-      raw['Estimasi Potongan Biaya Pengiriman'] || 0,
-    returnShippingFee: raw['Ongkos Kirim Pengembalian Barang'] || 0,
-    totalPayment: raw['Total Pembayaran'] || 0,
-    estimatedShipping: raw['Perkiraan Ongkos Kirim'] || 0,
-    buyerNote: raw['Catatan dari Pembeli'] || null,
-    sellerNote: raw['Catatan'] || null,
-    buyerUsername: raw['Username (Pembeli)'] || '',
-    recipientName: raw['Nama Penerima'] || '',
-    phoneNumber: raw['No. Telepon'] || '',
-    shippingAddress: raw['Alamat Pengiriman'] || null,
-    city: raw['Kota/Kabupaten'] || null,
-    province: raw['Provinsi'] || null,
-    completedAt: raw['Waktu Pesanan Selesai'] || null,
+    orderNumber: raw.orderNumber || '',
+    status: raw.status || '',
+    cancellationReason: raw.cancellationReason || null,
+    cancellationStatus: raw.cancellationStatus || null,
+    trackingNumber: raw.trackingNumber || null,
+    shippingOption: raw.shippingOption || null,
+    pickupType: raw.pickupType || null,
+    shipByDeadline: raw.shipByDeadline || null,
+    shippingTimeSet: raw.shippingTimeSet || null,
+    orderCreatedAt: raw.orderCreatedAt || null,
+    paymentTime: raw.paymentTime || null,
+    orderType: raw.orderType || null,
+    paymentMethod: raw.paymentMethod || null,
+    parentSku: raw.parentSku || null,
+    productName: raw.productName || '',
+    skuReference: raw.skuReference || null,
+    variantName: raw.variantName || null,
+    originalPrice: raw.originalPrice || 0,
+    discountedPrice: raw.discountedPrice || 0,
+    quantity: raw.quantity || 0,
+    returnedQuantity: raw.returnedQuantity || 0,
+    subtotal: raw.subtotal || 0,
+    totalDiscount: raw.totalDiscount || 0,
+    sellerDiscount: raw.sellerDiscount || 0,
+    platformDiscount: raw.platformDiscount || 0,
+    productWeight: raw.productWeight || null,
+    totalProductOrdered: raw.totalProductOrdered || 0,
+    totalWeight: raw.totalWeight || null,
+    sellerVoucher: raw.sellerVoucher || 0,
+    coinCashback: raw.coinCashback || 0,
+    platformVoucher: raw.platformVoucher || 0,
+    discountPackage: raw.discountPackage || null,
+    packageDiscountPlatform: raw.packageDiscountPlatform || 0,
+    packageDiscountSeller: raw.packageDiscountSeller || 0,
+    platformCoinDeduction: raw.platformCoinDeduction || 0,
+    creditCardDiscount: raw.creditCardDiscount || 0,
+    shippingFeePaidByBuyer: raw.shippingFeePaidByBuyer || 0,
+    estimatedShippingDiscount: raw.estimatedShippingDiscount || 0,
+    returnShippingFee: raw.returnShippingFee || 0,
+    totalPayment: raw.totalPayment || 0,
+    estimatedShipping: raw.estimatedShipping || 0,
+    buyerNote: raw.buyerNote || null,
+    sellerNote: raw.sellerNote || null,
+    buyerUsername: raw.buyerUsername || '',
+    recipientName: raw.recipientName || '',
+    phoneNumber: raw.phoneNumber || '',
+    shippingAddress: raw.shippingAddress || null,
+    city: raw.city || null,
+    province: raw.province || null,
+    completedAt: raw.completedAt || null,
   }
 }
 
@@ -392,7 +391,7 @@ export async function insertOrders(
     } catch (error) {
       const errMsg =
         error instanceof Error ? error.message : String(error)
-      errors.push(`Order ${raw['No. Pesanan'] || 'unknown'}: ${errMsg}`)
+      errors.push(`Order ${raw.orderNumber || 'unknown'}: ${errMsg}`)
       skipped++
     }
   }

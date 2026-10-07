@@ -1,28 +1,28 @@
 # Product Requirements Document (PRD)
-# BisnisKu - Professional Shopee Order Management Dashboard
+# BisnisKu - Professional Marketplace Order Management Dashboard
 
 ## 📋 Document Information
 - **Product Name**: BisnisKu
 - **Version**: 1.0.0
 - **Last Updated**: October 7, 2026
-- **Status**: Planning Phase
+- **Status**: Phase 1.0 Complete
 - **Document Owner**: Development Team
 
 ---
 
 ## 🎯 Executive Summary
 
-BisnisKu adalah aplikasi desktop berbasis web yang dirancang untuk membantu seller Shopee mengelola pesanan mereka secara efisien dengan visualisasi data yang profesional dan interaktif. Aplikasi ini mengotomatisasi proses filtering dan analisis data pesanan yang diekspor dari Shopee.
+BisnisKu adalah aplikasi desktop berbasis web yang dirancang untuk membantu marketplace seller mengelola pesanan mereka secara efisien dengan visualisasi data yang profesional dan interaktif. Aplikasi ini mengotomatisasi proses filtering dan analisis data pesanan yang diekspor dari marketplace.
 
 ### Problem Statement
-- Seller Shopee kesulitan menganalisis data pesanan dari file Excel export
+- Marketplace seller kesulitan menganalisis data pesanan dari file Excel export
 - Tidak ada visualisasi yang mudah dipahami untuk tracking performa penjualan
 - Sulit menghitung profit bersih karena banyak komponen (diskon, ongkir, fee)
 - Proses manual filtering data memakan waktu
 
 ### Solution
 Dashboard interaktif yang:
-- Auto-import dan parsing file Excel Shopee
+- Auto-import dan parsing file Excel export marketplace
 - Filter otomatis berdasarkan status pesanan
 - Visualisasi data dengan chart dan grafik profesional
 - Kalkulasi profit otomatis
@@ -33,7 +33,7 @@ Dashboard interaktif yang:
 ## 👥 Target Users
 
 ### Primary Users
-- **Shopee Sellers** yang ingin menganalisis performa penjualan
+- **Marketplace Sellers** yang ingin menganalisis performa penjualan
 - **Small to Medium Business Owners** yang mengelola toko online
 
 ### User Persona
@@ -50,7 +50,7 @@ Dashboard interaktif yang:
 ## 🎨 Product Vision & Goals
 
 ### Vision
-Menjadi dashboard terbaik untuk Shopee sellers dalam mengelola dan menganalisis pesanan dengan cara yang visual, intuitif, dan profesional.
+Menjadi dashboard terbaik untuk marketplace sellers dalam mengelola dan menganalisis pesanan dengan cara yang visual, intuitif, dan profesional.
 
 ### Goals
 1. **Efficiency**: Reduce order analysis time by 80%
@@ -104,7 +104,7 @@ Halaman utama yang menampilkan summary metrics dan visualisasi key performance i
 **Priority**: P0 (Must Have)
 
 #### Description
-Fitur untuk import file Excel export dari Shopee.
+Fitur untuk import file Excel export dari marketplace.
 
 #### Functionality
 - **Drag & Drop Upload**
@@ -495,7 +495,7 @@ CREATE TABLE orders (
   subtotal REAL,
   total_discount REAL,
   seller_discount REAL,
-  shopee_discount REAL,
+  platform_discount REAL,
   shipping_fee REAL,
   total_payment REAL,
   buyer_username TEXT,
@@ -706,7 +706,7 @@ GET    /api/profit          - Get profit analysis
 ## 📋 Appendix
 
 ### A. Excel Column Mapping
-All 49 columns from Shopee export:
+All 49 columns from marketplace export:
 1. No. Pesanan
 2. Status Pesanan
 3. Alasan Pembatalan
@@ -721,7 +721,7 @@ All 49 columns from Shopee export:
 
 ### B. Status Mapping
 ```
-Shopee Status → Our Status
+Marketplace Status → Our Status
 "Selesai" → Completed
 "Batal" / "Dibatalkan" → Cancelled
 "Sedang Dikirim" → Shipped

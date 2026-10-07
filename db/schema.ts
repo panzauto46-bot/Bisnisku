@@ -1,7 +1,7 @@
 import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core'
 
 /**
- * Orders table - stores all imported Shopee orders
+ * Orders table - stores all imported marketplace orders
  */
 export const orders = sqliteTable('orders', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -29,17 +29,17 @@ export const orders = sqliteTable('orders', {
   subtotal: real('subtotal'),
   totalDiscount: real('total_discount'),
   sellerDiscount: real('seller_discount'),
-  shopeeDiscount: real('shopee_discount'),
+  platformDiscount: real('platform_discount'),
   productWeight: text('product_weight'),
   totalProductOrdered: integer('total_product_ordered'),
   totalWeight: text('total_weight'),
   sellerVoucher: real('seller_voucher'),
   coinCashback: real('coin_cashback'),
-  shopeeVoucher: real('shopee_voucher'),
+  platformVoucher: real('platform_voucher'),
   discountPackage: text('discount_package'),
-  packageDiscountShopee: real('package_discount_shopee'),
+  packageDiscountPlatform: real('package_discount_platform'),
   packageDiscountSeller: real('package_discount_seller'),
-  shopeeCoinDeduction: real('shopee_coin_deduction'),
+  platformCoinDeduction: real('platform_coin_deduction'),
   creditCardDiscount: real('credit_card_discount'),
   shippingFeePaidByBuyer: real('shipping_fee_paid_by_buyer'),
   estimatedShippingDiscount: real('estimated_shipping_discount'),

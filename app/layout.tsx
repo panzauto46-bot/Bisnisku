@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'BisnisKu - Dashboard',
-  description: 'Professional Dashboard for Shopee Order Management & Analytics',
+  description: 'Professional Dashboard for Marketplace Order Management & Analytics',
 }
 
 export default function RootLayout({

@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Rebranding - October 7, 2026
+
+#### Changed — Trademark Safety
+Removed all marketplace brand references to avoid trademark/copyright issues:
+- 🔄 UI text "Shopee Dashboard" → "Marketplace Dashboard"
+- 🔄 App metadata description → generic "Marketplace Order Management"
+- 🔄 Order detail labels ("Diskon dari Shopee" → "Diskon dari Platform",
+  "Voucher Ditanggung Shopee" → "Voucher Ditanggung Platform",
+  "Potongan Koin Shopee" → "Potongan Koin Platform")
+- 🔄 Import page instructions → "Marketplace Seller Center"
+- 🔄 `parseShopeeDate` → `parseMarketplaceDate`
+
+#### Refactored — Decouple export format from domain model
+- `RawOrder` type now uses generic field names instead of raw Excel headers
+- Excel header strings are now isolated in a single adapter
+  (`excel-parser.service.ts`) — the only module referencing the export format
+- Renamed DB columns: `shopee_discount` → `platform_discount`,
+  `shopee_voucher` → `platform_voucher`,
+  `package_discount_shopee` → `package_discount_platform`,
+  `shopee_coin_deduction` → `platform_coin_deduction`
+- Renamed TS fields: `shopeeDiscount` → `platformDiscount`, etc.
+
+#### Added
+- `scripts/import-excel.ts` — CLI tool to re-import the Excel export
+- `scripts/verify-data.ts` — data verification/sanity check tool
+
+#### Verified
+- Re-imported 670 orders with the new pipeline (9 dupes skipped)
+- Status counts unchanged: 10 pending / 213 shipped / 328 completed / 119 cancelled
+- Revenue unchanged: Rp 27.517.101 (completed orders)
+- Production build passes (18 routes), type-check clean
+
+---
+
 ### Planning Phase - October 7, 2026
 
 #### Added
@@ -27,7 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-10-07
 
 ### Core Features
-- Excel import from Shopee Seller Center (drag & drop, 49 columns)
+- Excel import from Marketplace Seller Center (drag & drop, 49 columns)
 - SQLite database with Drizzle ORM
 - Dashboard with real-time stats and 4 interactive charts
 - 5 order pages with smart status filtering:
@@ -48,10 +82,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Framer Motion for animations
 - Recharts for data visualization
 - SQLite + Drizzle ORM
-- Shopee status mapping engine
+- Marketplace status mapping engine
 
 ### Verified With Real Data
-- 670 orders imported from actual Shopee export
+- 670 orders imported from actual marketplace export
 - Status filtering: 10 pending / 213 shipped / 328 completed / 119 cancelled
 - Revenue: Rp 27.517.101
 - Top products: Knop Baut Ketupat, Velocity Stack, etc.

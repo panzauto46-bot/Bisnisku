@@ -3,268 +3,117 @@
 ## 📁 Complete Directory Structure
 
 ```
-bisnisku/
+BisnisKu/
 ├── 📄 README.md                      # Project overview & setup guide
 ├── 📄 PRD.md                         # Product Requirements Document
 ├── 📄 ROADMAP.md                     # Development roadmap
 ├── 📄 PROGRESS.md                    # Progress tracking
+├── 📄 STATUS.md                      # Current status
+├── 📄 CHANGELOG.md                   # Changelog
+├── 📄 SUMMARY.md                     # Project summary
 ├── 📄 PROJECT_STRUCTURE.md           # This file
+├── 📄 LICENSE                        # MIT license
 ├── 📄 .gitignore                     # Git ignore rules
 ├── 📄 .eslintrc.json                 # ESLint configuration
 ├── 📄 .prettierrc                    # Prettier configuration
 ├── 📄 package.json                   # Dependencies & scripts
-├── 📄 pnpm-lock.yaml                 # Lock file
+├── 📄 package-lock.json              # Lock file
 ├── 📄 tsconfig.json                  # TypeScript configuration
 ├── 📄 next.config.js                 # Next.js configuration
 ├── 📄 tailwind.config.ts             # Tailwind CSS configuration
 ├── 📄 postcss.config.js              # PostCSS configuration
+├── 📄 components.json                # shadcn/ui configuration
 ├── 📄 drizzle.config.ts              # Drizzle ORM configuration
 │
+├── 📁 app/                           # Next.js App Router (root, no src/)
+│   ├── 📄 layout.tsx                 # Root layout + metadata
+│   ├── 📄 page.tsx                   # Dashboard (homepage)
+│   ├── 📄 globals.css                # Global styles
+│   │
+│   ├── 📁 api/                       # API routes (route handlers)
+│   │   ├── 📁 charts/
+│   │   │   ├── 📁 revenue/
+│   │   │   │   └── 📄 route.ts       # Daily revenue trend
+│   │   │   ├── 📁 products/
+│   │   │   │   └── 📄 route.ts       # Top products
+│   │   │   └── 📁 payment-methods/
+│   │   │       └── 📄 route.ts       # Payment method breakdown
+│   │   ├── 📁 import/
+│   │   │   └── 📄 route.ts           # Excel upload endpoint
+│   │   ├── 📁 orders/
+│   │   │   ├── 📄 route.ts           # List w/ filters & pagination
+│   │   │   └── 📁 [id]/
+│   │   │       └── 📄 route.ts       # Single order detail
+│   │   ├── 📁 products/
+│   │   │   └── 📄 route.ts           # Product cost management
+│   │   ├── 📁 profit/
+│   │   │   └── 📄 route.ts           # Profit analysis
+│   │   └── 📁 stats/
+│   │       └── 📄 route.ts           # Dashboard metrics
+│   │
+│   ├── 📁 orders/                    # All orders page
+│   │   └── 📄 page.tsx
+│   ├── 📁 pending/                   # Perlu Dikirim page
+│   │   └── 📄 page.tsx
+│   ├── 📁 shipped/                   # Dikirim page
+│   │   └── 📄 page.tsx
+│   ├── 📁 completed/                 # Selesai page
+│   │   └── 📄 page.tsx
+│   ├── 📁 cancelled/                 # Dibatalkan page
+│   │   └── 📄 page.tsx
+│   ├── 📁 import/                    # Excel import page (drag & drop)
+│   │   └── 📄 page.tsx
+│   └── 📁 profit/                    # Profit analysis page
+│       └── 📄 page.tsx
+│
+├── 📁 components/                    # React components
+│   ├── 📁 charts/                    # Recharts wrappers
+│   │   ├── 📄 revenue-chart.tsx
+│   │   ├── 📄 status-chart.tsx
+│   │   ├── 📄 top-products-chart.tsx
+│   │   └── 📄 payment-chart.tsx
+│   ├── 📁 dashboard/                 # Dashboard widgets
+│   │   └── 📄 metric-card.tsx
+│   ├── 📁 layout/                    # App chrome
+│   │   ├── 📄 header.tsx
+│   │   └── 📄 sidebar.tsx
+│   ├── 📁 orders/                    # Order UI
+│   │   ├── 📄 orders-table.tsx       # Table + pagination + search
+│   │   └── 📄 order-detail-modal.tsx # 49-field detail modal
+│   ├── 📁 shared/                    # Shared building blocks
+│   │   ├── 📄 animated-counter.tsx
+│   │   └── 📄 status-badge.tsx
+│   └── 📁 ui/                        # Base UI (button, card)
+│       ├── 📄 button.tsx
+│       └── 📄 card.tsx
+│
+├── 📁 db/                            # Database layer
+│   ├── 📄 index.ts                   # better-sqlite3 + Drizzle singleton
+│   └── 📄 schema.ts                  # orders, products, import_history
+│
+├── 📁 services/                      # Business logic
+│   ├── 📄 excel-parser.service.ts    # Excel adapter (export headers → RawOrder)
+│   ├── 📄 order.service.ts           # Queries, status mapping, stats
+│   └── 📄 profit.service.ts          # Profit calculation engine
+│
+├── 📁 utils/                         # Helpers
+│   ├── 📄 format.ts                  # Currency / number formatting
+│   └── 📄 date.ts                    # Date parsing (marketplace format)
+│
+├── 📁 types/                         # TypeScript types
+│   └── 📄 order.types.ts             # RawOrder, Order, OrderStatus, stats
+│
+├── 📁 scripts/                       # CLI utilities
+│   ├── 📄 setup-db.ts                # Initialize database
+│   ├── 📄 import-excel.ts            # Import Excel export
+│   ├── 📄 verify-data.ts             # Verify imported data
+│   ├── 📄 check-statuses.ts          # Inspect raw status strings
+│   └── 📄 check-category.ts          # Inspect status categories
+│
 ├── 📁 public/                        # Static assets
-│   ├── 📁 icons/
-│   │   ├── logo.svg
-│   │   ├── favicon.ico
-│   │   └── logo-dark.svg
-│   ├── 📁 images/
-│   │   ├── empty-state.svg
-│   │   ├── error-state.svg
-│   │   └── upload-placeholder.svg
-│   └── 📁 fonts/
-│       └── inter-var.woff2
 │
-├── 📁 src/
-│   │
-│   ├── 📁 app/                       # Next.js App Router
-│   │   ├── 📄 layout.tsx             # Root layout
-│   │   ├── 📄 page.tsx               # Homepage (Dashboard)
-│   │   ├── 📄 globals.css            # Global styles
-│   │   ├── 📄 loading.tsx            # Global loading state
-│   │   ├── 📄 error.tsx              # Global error boundary
-│   │   ├── 📄 not-found.tsx          # 404 page
-│   │   │
-│   │   ├── 📁 (dashboard)/           # Dashboard layout group
-│   │   │   ├── 📄 layout.tsx         # Dashboard layout with sidebar
-│   │   │   │
-│   │   │   ├── 📁 dashboard/         # Dashboard page
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   └── 📄 loading.tsx
-│   │   │   │
-│   │   │   ├── 📁 orders/            # All orders page
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   ├── 📄 loading.tsx
-│   │   │   │   └── 📁 [id]/          # Order detail page
-│   │   │   │       └── 📄 page.tsx
-│   │   │   │
-│   │   │   ├── 📁 pending-shipment/  # Pesanan perlu dikirim
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   └── 📄 loading.tsx
-│   │   │   │
-│   │   │   ├── 📁 shipped/           # Pesanan dikirim
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   └── 📄 loading.tsx
-│   │   │   │
-│   │   │   ├── 📁 completed/         # Pesanan selesai
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   └── 📄 loading.tsx
-│   │   │   │
-│   │   │   ├── 📁 cancelled/         # Pesanan dibatalkan
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   └── 📄 loading.tsx
-│   │   │   │
-│   │   │   ├── 📁 profit/            # Profit analysis
-│   │   │   │   ├── 📄 page.tsx
-│   │   │   │   ├── 📄 loading.tsx
-│   │   │   │   └── 📁 products/      # Product cost management
-│   │   │   │       └── 📄 page.tsx
-│   │   │   │
-│   │   │   └── 📁 import/            # Import data page
-│   │   │       ├── 📄 page.tsx
-│   │   │       └── 📄 loading.tsx
-│   │   │
-│   │   └── 📁 api/                   # API Routes
-│   │       ├── 📁 import/
-│   │       │   └── 📄 route.ts       # POST /api/import
-│   │       ├── 📁 orders/
-│   │       │   ├── 📄 route.ts       # GET /api/orders
-│   │       │   └── 📁 [id]/
-│   │       │       └── 📄 route.ts   # GET /api/orders/:id
-│   │       ├── 📁 stats/
-│   │       │   └── 📄 route.ts       # GET /api/stats
-│   │       ├── 📁 charts/
-│   │       │   ├── 📁 revenue/
-│   │       │   │   └── 📄 route.ts
-│   │       │   ├── 📁 products/
-│   │       │   │   └── 📄 route.ts
-│   │       │   └── 📁 status/
-│   │       │       └── 📄 route.ts
-│   │       ├── 📁 products/
-│   │       │   └── 📄 route.ts       # GET/POST /api/products
-│   │       └── 📁 profit/
-│   │           └── 📄 route.ts       # GET /api/profit
-│   │
-│   ├── 📁 components/                # React components
-│   │   │
-│   │   ├── 📁 layout/                # Layout components
-│   │   │   ├── 📄 sidebar.tsx
-│   │   │   ├── 📄 header.tsx
-│   │   │   ├── 📄 breadcrumbs.tsx
-│   │   │   ├── 📄 mobile-menu.tsx
-│   │   │   └── 📄 footer.tsx
-│   │   │
-│   │   ├── 📁 dashboard/             # Dashboard components
-│   │   │   ├── 📄 metric-card.tsx
-│   │   │   ├── 📄 stat-card.tsx
-│   │   │   ├── 📄 trend-indicator.tsx
-│   │   │   ├── 📄 quick-actions.tsx
-│   │   │   └── 📄 recent-orders.tsx
-│   │   │
-│   │   ├── 📁 charts/                # Chart components
-│   │   │   ├── 📄 revenue-chart.tsx
-│   │   │   ├── 📄 products-chart.tsx
-│   │   │   ├── 📄 status-pie-chart.tsx
-│   │   │   ├── 📄 payment-donut-chart.tsx
-│   │   │   ├── 📄 profit-area-chart.tsx
-│   │   │   └── 📄 chart-container.tsx
-│   │   │
-│   │   ├── 📁 orders/                # Order components
-│   │   │   ├── 📄 orders-table.tsx
-│   │   │   ├── 📄 order-row.tsx
-│   │   │   ├── 📄 order-detail-modal.tsx
-│   │   │   ├── 📄 order-filters.tsx
-│   │   │   ├── 📄 status-badge.tsx
-│   │   │   ├── 📄 priority-indicator.tsx
-│   │   │   └── 📄 bulk-actions.tsx
-│   │   │
-│   │   ├── 📁 import/                # Import components
-│   │   │   ├── 📄 file-upload.tsx
-│   │   │   ├── 📄 drag-drop-zone.tsx
-│   │   │   ├── 📄 upload-progress.tsx
-│   │   │   ├── 📄 import-history.tsx
-│   │   │   └── 📄 validation-errors.tsx
-│   │   │
-│   │   ├── 📁 profit/                # Profit components
-│   │   │   ├── 📄 product-cost-table.tsx
-│   │   │   ├── 📄 cost-input-form.tsx
-│   │   │   ├── 📄 profit-summary.tsx
-│   │   │   ├── 📄 performance-report.tsx
-│   │   │   └── 📄 roi-calculator.tsx
-│   │   │
-│   │   ├── 📁 ui/                    # shadcn/ui components
-│   │   │   ├── 📄 button.tsx
-│   │   │   ├── 📄 card.tsx
-│   │   │   ├── 📄 dialog.tsx
-│   │   │   ├── 📄 dropdown-menu.tsx
-│   │   │   ├── 📄 input.tsx
-│   │   │   ├── 📄 label.tsx
-│   │   │   ├── 📄 select.tsx
-│   │   │   ├── 📄 table.tsx
-│   │   │   ├── 📄 tabs.tsx
-│   │   │   ├── 📄 toast.tsx
-│   │   │   ├── 📄 tooltip.tsx
-│   │   │   ├── 📄 skeleton.tsx
-│   │   │   ├── 📄 badge.tsx
-│   │   │   ├── 📄 separator.tsx
-│   │   │   ├── 📄 slider.tsx
-│   │   │   ├── 📄 calendar.tsx
-│   │   │   ├── 📄 popover.tsx
-│   │   │   ├── 📄 sheet.tsx
-│   │   │   └── 📄 progress.tsx
-│   │   │
-│   │   └── 📁 shared/                # Shared components
-│   │       ├── 📄 loading-spinner.tsx
-│   │       ├── 📄 error-message.tsx
-│   │       ├── 📄 empty-state.tsx
-│   │       ├── 📄 search-input.tsx
-│   │       ├── 📄 date-range-picker.tsx
-│   │       ├── 📄 pagination.tsx
-│   │       ├── 📄 copy-button.tsx
-│   │       └── 📄 animated-counter.tsx
-│   │
-│   ├── 📁 lib/                       # Utility libraries
-│   │   ├── 📄 utils.ts               # General utilities
-│   │   ├── 📄 cn.ts                  # className utility
-│   │   ├── 📄 constants.ts           # App constants
-│   │   ├── 📄 validations.ts         # Zod schemas
-│   │   └── 📄 api-client.ts          # API client wrapper
-│   │
-│   ├── 📁 db/                        # Database layer
-│   │   ├── 📄 index.ts               # Database instance
-│   │   ├── 📄 schema.ts              # Drizzle schema
-│   │   ├── 📄 migrations.ts          # Migration runner
-│   │   └── 📁 queries/               # Database queries
-│   │       ├── 📄 orders.ts
-│   │       ├── 📄 products.ts
-│   │       ├── 📄 stats.ts
-│   │       └── 📄 imports.ts
-│   │
-│   ├── 📁 services/                  # Business logic
-│   │   ├── 📄 excel-parser.service.ts
-│   │   ├── 📄 order.service.ts
-│   │   ├── 📄 profit.service.ts
-│   │   ├── 📄 statistics.service.ts
-│   │   └── 📄 export.service.ts
-│   │
-│   ├── 📁 hooks/                     # Custom React hooks
-│   │   ├── 📄 use-orders.ts
-│   │   ├── 📄 use-filters.ts
-│   │   ├── 📄 use-pagination.ts
-│   │   ├── 📄 use-debounce.ts
-│   │   ├── 📄 use-stats.ts
-│   │   ├── 📄 use-upload.ts
-│   │   └── 📄 use-profit.ts
-│   │
-│   ├── 📁 store/                     # State management
-│   │   ├── 📄 filters-store.ts       # Zustand store for filters
-│   │   ├── 📄 ui-store.ts            # UI state (sidebar, modals)
-│   │   └── 📄 user-store.ts          # User preferences
-│   │
-│   ├── 📁 types/                     # TypeScript types
-│   │   ├── 📄 order.types.ts
-│   │   ├── 📄 product.types.ts
-│   │   ├── 📄 api.types.ts
-│   │   ├── 📄 chart.types.ts
-│   │   └── 📄 database.types.ts
-│   │
-│   └── 📁 utils/                     # Helper functions
-│       ├── 📄 format.ts              # Formatting utilities
-│       ├── 📄 date.ts                # Date utilities
-│       ├── 📄 currency.ts            # Currency formatting
-│       ├── 📄 excel.ts               # Excel helpers
-│       ├── 📄 filters.ts             # Filter logic
-│       └── 📄 calculations.ts        # Profit calculations
-│
-├── 📁 data/                          # Local data storage
-│   ├── 📄 database.db                # SQLite database (gitignored)
-│   ├── 📁 uploads/                   # Uploaded files (gitignored)
-│   └── 📁 exports/                   # Generated exports (gitignored)
-│
-├── 📁 tests/                         # Test files
-│   ├── 📁 unit/
-│   │   ├── 📄 format.test.ts
-│   │   ├── 📄 calculations.test.ts
-│   │   └── 📄 excel-parser.test.ts
-│   ├── 📁 integration/
-│   │   ├── 📄 api.test.ts
-│   │   └── 📄 database.test.ts
-│   └── 📁 e2e/
-│       ├── 📄 import.spec.ts
-│       └── 📄 orders.spec.ts
-│
-├── 📁 docs/                          # Additional documentation
-│   ├── 📄 USER_GUIDE.md
-│   ├── 📄 API_DOCS.md
-│   ├── 📄 DEVELOPMENT.md
-│   ├── 📄 DEPLOYMENT.md
-│   └── 📁 screenshots/
-│       ├── dashboard.png
-│       ├── orders-page.png
-│       └── import-flow.png
-│
-└── 📁 scripts/                       # Utility scripts
-    ├── 📄 setup-db.ts                # Initialize database
-    ├── 📄 seed-demo.ts               # Seed demo data
-    ├── 📄 migrate.ts                 # Run migrations
-    └── 📄 backup-db.ts               # Backup database
+└── 📁 data/                          # Local storage (gitignored)
+    └── 📄 database.db                # SQLite database
 ```
 
 ---
@@ -524,7 +373,7 @@ export async function GET(request: NextRequest) {
 ```env
 # .env.local (not committed to git)
 
-NEXT_PUBLIC_APP_NAME=ShopeeFlow
+NEXT_PUBLIC_APP_NAME=BisnisKu
 NEXT_PUBLIC_APP_VERSION=1.0.0
 
 # Database

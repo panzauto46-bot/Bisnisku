@@ -95,7 +95,7 @@ export default function ImportPage() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Import Data</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Upload file Excel export dari Shopee Seller Center
+          Upload file Excel export dari Marketplace Seller Center
         </p>
       </div>
 
@@ -256,7 +256,7 @@ export default function ImportPage() {
       {/* Instructions */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Cara Export Data dari Shopee</CardTitle>
+          <CardTitle className="text-base">Cara Export Data dari Marketplace</CardTitle>
         </CardHeader>
         <CardContent>
           <ol className="space-y-3 text-sm text-slate-600">
@@ -265,7 +265,7 @@ export default function ImportPage() {
                 1
               </span>
               <span>
-                Login ke <strong>Shopee Seller Center</strong>
+                Login ke <strong>Marketplace Seller Center</strong>
               </span>
             </li>
             <li className="flex gap-3">
