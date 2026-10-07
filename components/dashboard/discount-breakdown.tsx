@@ -79,7 +79,6 @@ export function DiscountBreakdownCard({
           <div className="space-y-5">
             <RowGroup
               title="Potongan Harga Produk"
-              subtitle="Kolom 'Total Diskon' di Excel = jumlah dari 3 baris ini"
               rows={productRows}
               totalLabel="Total Diskon"
               totalValue={discount.totalProductDiscount}
@@ -87,7 +86,6 @@ export function DiscountBreakdownCard({
 
             <RowGroup
               title="Potongan Platform Saat Bayar"
-              subtitle="Tidak termasuk dalam 'Total Diskon' — dipotong saat checkout"
               rows={platformRows}
               totalLabel="Subtotal Potongan Platform"
               totalValue={discount.totalPlatformDeduction}
@@ -115,7 +113,6 @@ export function DiscountBreakdownCard({
           <div className="space-y-5">
             <RowGroup
               title="Biaya Pengiriman"
-              subtitle="Rincian ongkir per komponen"
               rows={shippingRows}
             />
 
