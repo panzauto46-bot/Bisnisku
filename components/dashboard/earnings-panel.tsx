@@ -300,16 +300,13 @@ function FeeRow({ label, value }: { label: string; value: number }) {
 function ReconciliationSection({ recon }: { recon: EarningsReconciliation }) {
   const shippingDiff =
     recon.shippingPaidByBuyer.earnings - recon.shippingPaidByBuyer.orders
-  const totalDiff = recon.totalPayment.earnings - recon.totalPayment.orders
 
-  // Dianggap sinkron kalau ongkir pembeli cocok dan order yang selisih
-  // total pembayarannya di bawah 5% dari order yang dibandingkan
-  const shippingSync = Math.abs(shippingDiff) < 1
-  const mismatchRate =
-    recon.matchedCount > 0
-      ? recon.mismatchCount / recon.matchedCount
-      : 1
-  const allSync = shippingSync && mismatchRate < 0.05
+  // Ongkir pembeli adalah satu-satunya kolom yang definisinya persis sama di
+  // kedua file, jadi ini indikator sinkronisasi yang valid. Total pembayaran
+  // sengaja tidak dibandingkan: kolomnya berbeda definisi (total yang harus
+  // dibayar vs jumlah yang benar-benar dibayarkan), sehingga selisihnya
+  // bukan tanda data tak sinkron melainkan cuma beda cara pencatatan.
+  const allSync = Math.abs(shippingDiff) < 1
 
   return (
     <div className="mt-2 rounded-xl border border-blue-100 bg-blue-50/50 p-4">
@@ -340,27 +337,14 @@ function ReconciliationSection({ recon }: { recon: EarningsReconciliation }) {
           earningsValue={recon.shippingPaidByBuyer.earnings}
           diff={shippingDiff}
         />
-        <ReconRow
-          label="Total Dibayar Pembeli"
-          ordersValue={recon.totalPayment.orders}
-          earningsValue={recon.totalPayment.earnings}
-          diff={totalDiff}
-          mismatchNote={
-            recon.mismatchCount > 0
-              ? `${recon.matchedCount - recon.mismatchCount} dari ${
-                  recon.matchedCount
-                } order cocok persis — ${recon.mismatchCount} order tercatan Rp 0 di file pesanan, tapi ada pembayarannya di file penghasilan (perbedaan cara pencatatan export, bukan data hilang)`
-              : undefined
-          }
-        />
       </div>
 
       <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
         Panel <strong>Rincian Potongan Platform</strong> menghitung dari file
-        pesanan (angka ongkirnya masih estimasi), panel ini dari file
-        penghasilan (angka real yang keluar). Ongkir pembeli yang cocok persis
-        adalah indikator terkuat bahwa kedua file berasal dari toko yang sama
-        dan periodenya tumpang tindih.
+        pesanan, panel ini dari file penghasilan (angka real yang keluar).
+        Ongkir pembeli dipakai sebagai patokan karena kolomnya persis sama di
+        kedua file — kalau cocok, kedua file berasal dari toko dan periode
+        yang sama.
       </p>
     </div>
   )
@@ -371,13 +355,11 @@ function ReconRow({
   ordersValue,
   earningsValue,
   diff,
-  mismatchNote,
 }: {
   label: string
   ordersValue: number
   earningsValue: number
   diff: number
-  mismatchNote?: string
 }) {
   const inSync = Math.abs(diff) < 1
 
@@ -415,11 +397,6 @@ function ReconRow({
           </p>
         </div>
       </div>
-      {mismatchNote && (
-        <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
-          {mismatchNote}
-        </p>
-      )}
     </div>
   )
 }
