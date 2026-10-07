@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { StatusBadge } from '@/components/shared/status-badge'
+import { OrderEarningsSection } from '@/components/orders/order-earnings-section'
 import { formatCurrency } from '@/utils/format'
 import { formatDateTime } from '@/utils/date'
 import type { OrderWithCategory } from '@/types/order.types'
@@ -223,6 +224,9 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
               </div>
             </div>
           </Section>
+
+          {/* Earnings & platform fees from the settlement report */}
+          <OrderEarningsSection orderNumber={order.orderNumber} />
 
           {/* Shipping Section */}
           <Section icon={Truck} title="Pengiriman">

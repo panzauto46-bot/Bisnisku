@@ -2,10 +2,10 @@
 
 **Created**: October 7, 2026  
 **Last Updated**: October 8, 2026  
-**Status**: 🟢 WORKING WITH REAL DATA — MVP complete, export done  
+**Status**: 🟢 WORKING WITH REAL DATA — MVP complete, export & penghasilan done  
 **Estimated Timeline**: 7 weeks (49 days)  
 **Repo**: https://github.com/panzauto46-bot/Bisnisku  
-**Latest Commit**: `3b8d5d9` — feat: multi-format data export
+**Latest Commit**: `499f219` — refactor: hapus subtitle panel yang redundant
 
 ---
 
@@ -369,7 +369,14 @@ Success:    #10B981 (Green)
 - id, product_name, cost_price, notes
 - For profit calculation
 
-**3. import_history** (Audit trail)
+**3. order_earnings** (Settlement report)
+- Data dari file Laporan Penghasilan (36 kolom)
+- Unique: order_number — di-upsert saat import ulang
+- Total penghasilan, harga produk, ongkir, 11 biaya platform,
+  refund, info pembeli & kurir
+- Diisi oleh import terpisah, di-match ke orders by nomor pesanan
+
+**4. import_history** (Audit trail)
 - Track all imports
 - File name, size, records count, timestamp
 
@@ -554,6 +561,8 @@ Aplikasi BisnisKu sudah berjalan penuh dengan data asli dari Excel export:
 - ✅ Dashboard + 4 charts + 5 metric cards
 - ✅ 5 halaman pesanan + detail modal 49 fields
 - ✅ Analisis profit + input modal per produk
+- ✅ **Import File Penghasilan** — panel Penghasilan Bersih Platform +
+  rincian 11 biaya platform, match otomatis dengan file pesanan
 - ✅ **Export multi-format**: CSV, Excel (.xlsx), PDF — 9 opsi di dashboard
 - ✅ **Reset data** dengan konfirmasi
 - ✅ Trademark-safe (tidak ada nama brand marketplace di UI/domain)

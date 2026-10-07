@@ -15,6 +15,7 @@ import {
 import { MetricCard } from '@/components/dashboard/metric-card'
 import { ExportMenu } from '@/components/dashboard/export-menu'
 import { DiscountBreakdownCard } from '@/components/dashboard/discount-breakdown'
+import { EarningsPanel } from '@/components/dashboard/earnings-panel'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency, formatNumber, formatPercentage } from '@/utils/format'
 import type { DashboardStats } from '@/types/order.types'
@@ -153,6 +154,10 @@ export default function DashboardPage() {
         shipping={stats.shippingBreakdown}
         completedCount={stats.completed}
       />
+
+      {/* Net earnings from the settlement report — the actual money that
+          reached the seller balance, with every platform fee itemised */}
+      <EarningsPanel />
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

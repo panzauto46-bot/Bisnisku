@@ -318,16 +318,16 @@ Total Timeline           : ~7 weeks  (49 days)
 ### Overall Progress
 ```
 Phase 1.0 (MVP)          : ██████████████████████░░ 98%  ✅ Complete
-Phase 1.1 (Enhancement)  : ████████████████████░░░░ 95%  🟢 Export done
+Phase 1.1 (Enhancement)  : ██████████████████████░░ 96%  🟢 Export + penghasilan
 Phase 1.2 (Profit)       : █████████████████████░░░ 85%  🟡 Needs cost data
 ```
 
-**Total Progress**: ~93%
+**Total Progress**: ~96%
 
 ### GitHub Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `3b8d5d9` — feat: multi-format data export
+- **Latest Commit**: `499f219` — refactor: hapus subtitle panel yang redundant
 
 ---
 
@@ -340,6 +340,7 @@ Phase 1.2 (Profit)       : █████████████████�
 - [x] **Milestone 4.5**: Dummy data bug fixed + pushed to GitHub (Oct 7)
 - [x] **Milestone 4.6**: Trademark rebrand + reset data + license (Oct 7)
 - [x] **Milestone 4.7**: Multi-format export CSV/Excel/PDF (Oct 8)
+- [x] **Milestone 4.8**: Import file penghasilan + rincian biaya platform (Oct 8)
 - [ ] **Milestone 5**: Filter periode (PR-A)
 - [ ] **Milestone 6**: Operational features — sidebar badge + deadline alert (PR-B, PR-C)
 - [ ] **Milestone 7**: Profit features fully usable — bulk cost input (PR-D)

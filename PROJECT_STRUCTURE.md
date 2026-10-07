@@ -39,7 +39,9 @@ BisnisKu/
 │   │   │   └── 📁 payment-methods/
 │   │   │       └── 📄 route.ts       # Payment method breakdown
 │   │   ├── 📁 import/
-│   │   │   └── 📄 route.ts           # Excel upload endpoint
+│   │   │   └── 📄 route.ts           # Order Excel upload endpoint
+│   │   ├── 📁 import-earnings/
+│   │   │   └── 📄 route.ts           # Settlement Excel upload endpoint
 │   │   ├── 📁 orders/
 │   │   │   ├── 📄 route.ts           # List w/ filters & pagination
 │   │   │   └── 📁 [id]/
@@ -48,6 +50,14 @@ BisnisKu/
 │   │   │   └── 📄 route.ts           # Product cost management
 │   │   ├── 📁 profit/
 │   │   │   └── 📄 route.ts           # Profit analysis
+│   │   ├── 📁 earnings/
+│   │   │   ├── 📄 route.ts           # Aggregate earnings stats
+│   │   │   └── 📁 [orderNumber]/
+│   │   │       └── 📄 route.ts       # Per-order earnings
+│   │   ├── 📁 reset/
+│   │   │   └── 📄 route.ts           # DELETE all data
+│   │   ├── 📁 export/
+│   │   │   └── 📄 route.ts           # CSV / Excel / PDF export
 │   │   └── 📁 stats/
 │   │       └── 📄 route.ts           # Dashboard metrics
 │   │
@@ -61,7 +71,7 @@ BisnisKu/
 │   │   └── 📄 page.tsx
 │   ├── 📁 cancelled/                 # Dibatalkan page
 │   │   └── 📄 page.tsx
-│   ├── 📁 import/                    # Excel import page (drag & drop)
+│   ├── 📁 import/                    # Import page (2 upload zones + reset)
 │   │   └── 📄 page.tsx
 │   └── 📁 profit/                    # Profit analysis page
 │       └── 📄 page.tsx
@@ -73,35 +83,46 @@ BisnisKu/
 │   │   ├── 📄 top-products-chart.tsx
 │   │   └── 📄 payment-chart.tsx
 │   ├── 📁 dashboard/                 # Dashboard widgets
-│   │   └── 📄 metric-card.tsx
+│   │   ├── 📄 metric-card.tsx
+│   │   ├── 📄 export-menu.tsx        # CSV/Excel/PDF dropdown (9 opsi)
+│   │   ├── 📄 discount-breakdown.tsx # Rincian potongan platform
+│   │   └── 📄 earnings-panel.tsx     # Panel Penghasilan Bersih Platform
+│   ├── 📁 import/                    # Upload building blocks
+│   │   └── 📄 file-upload-zone.tsx   # Reusable drag & drop zone
 │   ├── 📁 layout/                    # App chrome
 │   │   ├── 📄 header.tsx
 │   │   └── 📄 sidebar.tsx
 │   ├── 📁 orders/                    # Order UI
 │   │   ├── 📄 orders-table.tsx       # Table + pagination + search
-│   │   └── 📄 order-detail-modal.tsx # 49-field detail modal
+│   │   ├── 📄 order-detail-modal.tsx # 49-field detail modal
+│   │   └── 📄 order-earnings-section.tsx # Penghasilan per order
 │   ├── 📁 shared/                    # Shared building blocks
 │   │   ├── 📄 animated-counter.tsx
-│   │   └── 📄 status-badge.tsx
+│   │   ├── 📄 status-badge.tsx
+│   │   └── 📄 confirm-dialog.tsx     # Konfirmasi dialog (reset)
 │   └── 📁 ui/                        # Base UI (button, card)
 │       ├── 📄 button.tsx
 │       └── 📄 card.tsx
 │
 ├── 📁 db/                            # Database layer
 │   ├── 📄 index.ts                   # better-sqlite3 + Drizzle singleton
-│   └── 📄 schema.ts                  # orders, products, import_history
+│   └── 📄 schema.ts                  # orders, products, order_earnings, import_history
 │
 ├── 📁 services/                      # Business logic
-│   ├── 📄 excel-parser.service.ts    # Excel adapter (export headers → RawOrder)
-│   ├── 📄 order.service.ts           # Queries, status mapping, stats
-│   └── 📄 profit.service.ts          # Profit calculation engine
+│   ├── 📄 excel-parser.service.ts    # Order Excel adapter (headers → RawOrder)
+│   ├── 📄 earnings-parser.service.ts # Settlement Excel adapter (Penghasilan sheet)
+│   ├── 📄 order.service.ts           # Queries, status mapping, stats, reset
+│   ├── 📄 earnings.service.ts        # Upsert + aggregate earnings
+│   ├── 📄 profit.service.ts          # Profit calculation engine
+│   └── 📄 export.service.ts          # CSV / Excel / PDF generators
 │
 ├── 📁 utils/                         # Helpers
 │   ├── 📄 format.ts                  # Currency / number formatting
 │   └── 📄 date.ts                    # Date parsing (marketplace format)
 │
 ├── 📁 types/                         # TypeScript types
-│   └── 📄 order.types.ts             # RawOrder, Order, OrderStatus, stats
+│   ├── 📄 order.types.ts             # RawOrder, Order, OrderStatus, stats
+│   └── 📄 earnings.types.ts          # RawEarnings, OrderEarnings, EarningsStats
 │
 ├── 📁 scripts/                       # CLI utilities
 │   ├── 📄 setup-db.ts                # Initialize database

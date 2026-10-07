@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Import File Penghasilan (Laporan Settlement) - October 8, 2026
+
+#### Added — Sumber data biaya platform yang 100% akurat
+Fitur import file **Laporan Penghasilan** — export terpisah dari Seller Center
+yang berisi dana masuk dan semua potongan biaya per order. Sebelumnya biaya
+platform hanya bisa diestimasi dari kolom diskon file pesanan; sekarang
+angka persisnya diambil langsung dari settlement report.
+
+- 🆕 Tabel `order_earnings` di `db/schema.ts` — 36 kolom (total penghasilan,
+  harga produk, ongkir, 11 biaya platform, refund, info pembeli & kurir)
+- 🆕 `services/earnings-parser.service.ts` — parser sheet "Penghasilan";
+  melewatkan baris tipe "Sku" (519 baris) agar tiap order hanya dihitung
+  sekali. Header Excel asli hanya ada di file ini (trademark safety)
+- 🆕 `services/earnings.service.ts` — upsert per order number, agregasi
+  statistik, match ke tabel orders
+- 🆕 `POST /api/import-earnings` — upload file, parsing, upsert
+- 🆕 `GET /api/earnings` — statistik agregat semua settlement
+- 🆕 `GET /api/earnings/[orderNumber]` — data penghasilan satu order
+- 🆕 Halaman Import sekarang punya **dua area upload** (File Pesanan +
+  File Penghasilan) via komponen reusable `FileUploadZone`, dengan
+  penjelasan bahwa keduanya dicocokkan otomatis by nomor pesanan
+- 🆕 Panel **"Penghasilan Bersih Platform"** di dashboard: total penghasilan
+  bersih, harga produk, total biaya platform (+ persentasenya), rincian
+  11 biaya platform, komponen ongkir, dan diskon/cashback disponsor.
+  Sebelum file di-import, tampil empty state yang mengarah ke halaman import
+  (angka Rp 0 yang menyesatkan tidak pernah ditampilkan)
+- 🆕 Section **"Penghasilan & Biaya Platform"** di order detail modal —
+  penghasilan bersih order + rincian biaya, tanggal dana dilepaskan
+
+#### Changed
+- 🔄 `resetAllData()` sekarang juga menghapus `order_earnings` dan reset
+  sequence-nya. Dialog konfirmasi di halaman import diperbarui
+- 🔄 Halaman import: dropzone lama di-refactor menjadi `FileUploadZone`
+  reusable (2 instance, accent biru & emerald)
+
+#### Verified — Data Asli
+- Import `penghasilan.xlsx`: **515 baris order** tersimpan, 519 baris SKU
+  di-skip dengan benar, 0 error
+- Match dengan file pesanan: **409 dari 515** order sukses dicocokkan;
+  106 order di settlement belum ada di data pesanan (periodenya berbeda)
+  — angka ini ditampilkan transparan di dashboard
+- Validasi formula penghasilan: 20/20 order cocok dengan
+  `Harga Produk + Ongkir + Gratis Ongkir + Semua Biaya − Refund`
+- Dashboard menampilkan: Penghasilan Bersih Rp 29.499.293,
+  Harga Produk Rp 48.801.785, Total Biaya Platform Rp 16.773.147 (34,4%),
+  11 baris rincian biaya
+- Order detail modal menampilkan section penghasilan untuk order yang match
+  (contoh: 260901T1KY92H2 → Rp 50.875), dan tidak menampilkannya untuk
+  order yang belum ada datanya
+- Type-check clean (`tsc --noEmit` exit 0)
+
+#### Fixed
+- Query match earnings-vs-orders dengan `sql.join` mengembalikan semua baris
+  sebagai unmatched → diganti select sederhana + Set lookup
+
+---
+
 ### Backlog — Prioritas PR Berikutnya (Oct 8, 2026)
 
 Hasil audit setelah fitur export selesai. Daftar ini adalah kandidat PR

@@ -20,6 +20,10 @@
 - 🎯 **Smart Filtering** - Filter otomatis berdasarkan status pesanan
 - 💰 **Profit Analysis** - Hitung profit bersih per produk
 - 📤 **Easy Import** - Drag & drop Excel file dari Marketplace
+- 💵 **Import File Penghasilan** - Upload Laporan Penghasilan untuk lihat
+  penghasilan bersih & rincian SEMUA biaya platform yang dipotong (admin,
+  transaksi, promo, ongkir XTRA, PPh, dll). Kedua file dicocokkan otomatis
+  by nomor pesanan
 - 📥 **Multi-Format Export** - Download data sebagai CSV, Excel (.xlsx), atau PDF
   (Pesanan, Profit, atau Statistik — 9 opsi, semua dari Dashboard)
 - 🗑️ **Reset Data** - Hapus semua data kembali ke kondisi kosong, kapan saja
@@ -183,13 +187,27 @@ pnpm dev
 
 ### 1. Import Data dari Marketplace
 
+**File Pesanan** (wajib):
 1. Login ke **Marketplace Seller Center**
 2. Pergi ke **My Income** → **My Orders**
 3. Klik **Export** → Pilih date range → Download Excel
-4. Buka **BisnisKu**
-5. Klik **Import Data** atau drag & drop file Excel
+4. Buka **BisnisKu** → **Import Data**
+5. Upload file pesanan di area **"1. File Pesanan"** (drag & drop atau klik)
 6. Wait for processing (biasanya < 5 detik)
-7. Data siap digunakan! 🎉
+
+**File Penghasilan** (opsional, tapi sangat direkomendasikan):
+1. Di Seller Center, buka menu **Finance / Saldo** → **Laporan Penghasilan**
+2. Download periode yang sama dengan file pesanan
+3. Upload di area **"2. File Penghasilan"**
+4. Panel **"Penghasilan Bersih Platform"** muncul di dashboard — berisi
+   penghasilan bersih dan rincian semua biaya platform yang dipotong
+
+Kedua file dicocokkan otomatis **berdasarkan nomor pesanan**. Order yang ada
+di file penghasilan tapi belum ada di file pesanan tetap disimpan dan ditandai
+sebagai "belum ada di data pesanan".
+
+> 💡 Import file pesanan dulu, baru file penghasilan. Kalau periodenya sama,
+> hampir semua order akan ter-match.
 
 ### 2. Navigasi Dashboard
 
@@ -220,6 +238,9 @@ Klik pada row order untuk melihat detail lengkap (49 fields):
 - Order information
 - Product details
 - Pricing & discounts
+- **Penghasilan & Biaya Platform** — data dari file Laporan Penghasilan
+  (hanya muncul kalau order ada di file yang di-import): penghasilan bersih,
+  tanggal dana dilepaskan, rincian setiap biaya platform
 - Shipping information
 - Customer information
 - Timeline
@@ -248,8 +269,8 @@ File otomatis terdownload dengan nama `bisnisku-{tipe}-{tanggal}.{format}`.
 ### 7. Reset Data
 
 Pergi ke **Import Data** → klik **Reset Data** untuk menghapus SEMUA data
-(orders + harga modal + riwayat import) kembali ke kondisi kosong.
-Ada dialog konfirmasi sebelum penghapusan.
+(orders + penghasilan + harga modal + riwayat import) kembali ke kondisi
+kosong. Ada dialog konfirmasi sebelum penghapusan.
 
 ---
 
@@ -288,6 +309,7 @@ Detail lengkap: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
 - [x] Professional animations
 - [x] Advanced charts
 - [x] Export functionality (CSV / Excel / PDF)
+- [x] Import file penghasilan + rincian biaya platform
 - [x] Responsive design
 - [x] Error handling & loading states
 

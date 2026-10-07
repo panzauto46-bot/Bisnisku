@@ -2,7 +2,7 @@
 
 **Last Updated**: October 8, 2026  
 **Current Phase**: Phase 1.0 COMPLETE — Enhancement & Profit hampir selesai  
-**Overall Progress**: 93%
+**Overall Progress**: 96%
 
 ---
 
@@ -15,8 +15,8 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ### 🐙 Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `3b8d5d9` — feat: multi-format data export
-- **Files**: 70+ files, 20.000+ baris kode
+- **Latest Commit**: `499f219` — refactor: hapus subtitle panel yang redundant
+- **Files**: 80+ files, 22.000+ baris kode
 
 ### Verifikasi Data (Oct 7, 2026)
 
@@ -50,6 +50,13 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ---
 
 ## ✨ Update Terbaru (Oct 7-8, 2026)
+
+### Import File Penghasilan (Oct 8) — commit menyusul
+- Tabel `order_earnings` + parser sheet "Penghasilan" (36 kolom, skip baris SKU)
+- Panel **Penghasilan Bersih Platform** di dashboard + section di order detail
+- Dua area upload di halaman Import, match otomatis by nomor pesanan
+- Data asli: 515 baris settlement, 409 match, Penghasilan Bersih Rp 29.499.293,
+  Total Biaya Platform Rp 16.773.147 (34,4% dari harga produk)
 
 ### Multi-Format Export (Oct 8) — commit `3b8d5d9`
 - Tambah `GET /api/export?type={orders|profit|stats}&format={csv|xlsx|pdf}`
@@ -121,7 +128,7 @@ yang berisiko kena hak cipta/sanksi trademark.
 ### 2. Database ✅
 - [x] SQLite database setup (`data/database.db`)
 - [x] Drizzle ORM configured
-- [x] 3 tables: orders, products, import_history
+- [x] 4 tables: orders, products, import_history, order_earnings
 - [x] Indexes for performance
 - [x] Singleton connection pattern (fixes DB lock)
 - [x] Setup script (`scripts/setup-db.ts`)
@@ -168,6 +175,7 @@ yang berisiko kena hak cipta/sanksi trademark.
 - [x] Cancellation reason alert
 - [x] Buyer/seller notes display
 - [x] Smooth modal animations
+- [x] **Section Penghasilan & Biaya Platform** (data dari file settlement)
 
 ### 7. Profit Analysis ✅ (PARTIAL)
 - [x] Product cost management page
@@ -203,6 +211,9 @@ yang berisiko kena hak cipta/sanksi trademark.
 - [x] `GET /api/profit` - Profit analysis
 - [x] `DELETE /api/reset` - Reset semua data
 - [x] `GET /api/export?type=&format=` - Export CSV/Excel/PDF
+- [x] `POST /api/import-earnings` - Upload file Laporan Penghasilan
+- [x] `GET /api/earnings` - Statistik agregat penghasilan
+- [x] `GET /api/earnings/[orderNumber]` - Penghasilan per order
 
 ### 10. Export Multi-Format ✅ (VERIFIED)
 - [x] CSV — semua 49 kolom, UTF-8 (BOM), siap olah di Excel
@@ -214,10 +225,22 @@ yang berisiko kena hak cipta/sanksi trademark.
 - [x] Nama file otomatis ikut tanggal (mis. `bisnisku-orders-2026-10-08.csv`)
 
 ### 11. Reset Data ✅ (VERIFIED)
-- [x] Hapus SEMUA data (orders + product costs + import history)
+- [x] Hapus SEMUA data (orders + penghasilan + product costs + import history)
 - [x] Dialog konfirmasi reusable (`ConfirmDialog`)
 - [x] Tombol di halaman Import
 - [x] Tested: 698 orders + 1 product + 6 history → 0 semua
+
+### 12. Import File Penghasilan ✅ (VERIFIED WITH REAL DATA)
+- [x] Parser sheet "Penghasilan" — deteksi header 2-baris, filter tipe "Order",
+  skip baris "Sku"
+- [x] Upsert per order number (import ulang = refresh angka, bukan duplikat)
+- [x] Match otomatis dengan file pesanan by nomor pesanan
+- [x] Panel dashboard: Penghasilan Bersih, Harga Produk, Total Biaya Platform
+  (+ persentase), 11 rincian biaya, komponen ongkir, diskon disponsor
+- [x] Empty state sebelum import (tidak menampilkan Rp 0 yang menyesatkan)
+- [x] Section penghasilan di order detail modal
+- [x] **REAL TEST: 515 baris order tersimpan, 519 baris SKU di-skip,
+  409/515 match dengan file pesanan**
 
 ---
 
@@ -260,6 +283,8 @@ yang berisiko kena hak cipta/sanksi trademark.
 | 1 | Port 3000 in use (using 3001) | Low | ⚠️ Workaround |
 | 2 | AnimatedCounter shows 0 during first second (animation) | Low | ✅ By design |
 | 3 | Dev server compile slow on first page visit | Low | ✅ Expected |
+| 4 | `next build` + `next dev` barengan → cache `.next` korup | Medium | ⚠️ Hindari |
+| 5 | `/api/stats` bisa ter-cache (bukan force-dynamic) | Low | ⚠️ Reload jika stale |
 
 ---
 
@@ -269,10 +294,11 @@ yang berisiko kena hak cipta/sanksi trademark.
 ```
 app/
 ├── layout.tsx                    # Root layout
-├── page.tsx                      # Dashboard (+ ExportMenu)
+├── page.tsx                      # Dashboard (+ ExportMenu + EarningsPanel)
 ├── globals.css                   # Global styles
 ├── api/
 │   ├── import/route.ts
+│   ├── import-earnings/route.ts  # POST — file Laporan Penghasilan
 │   ├── orders/route.ts
 │   ├── orders/[id]/route.ts
 │   ├── stats/route.ts
@@ -281,6 +307,8 @@ app/
 │   ├── charts/payment-methods/route.ts
 │   ├── products/route.ts
 │   ├── profit/route.ts
+│   ├── earnings/route.ts         # GET — stats agregat penghasilan
+│   ├── earnings/[orderNumber]/route.ts
 │   ├── reset/route.ts            # DELETE — reset semua data
 │   └── export/route.ts           # GET — CSV/Excel/PDF
 ├── orders/page.tsx
@@ -288,16 +316,20 @@ app/
 ├── shipped/page.tsx
 ├── completed/page.tsx
 ├── cancelled/page.tsx
-├── import/page.tsx               # + tombol Reset Data
+├── import/page.tsx               # 2 area upload (pesanan + penghasilan) + Reset
 └── profit/page.tsx
 
 components/
 ├── layout/sidebar.tsx
 ├── layout/header.tsx
 ├── dashboard/metric-card.tsx
-├── dashboard/export-menu.tsx     # Dropdown export 9 opsi
+├── dashboard/export-menu.tsx      # Dropdown export 9 opsi
+├── dashboard/discount-breakdown.tsx
+├── dashboard/earnings-panel.tsx   # Panel Penghasilan Bersih Platform
+├── import/file-upload-zone.tsx    # Dropzone reusable (2 instance)
 ├── orders/orders-table.tsx
 ├── orders/order-detail-modal.tsx
+├── orders/order-earnings-section.tsx
 ├── charts/revenue-chart.tsx
 ├── charts/status-chart.tsx
 ├── charts/top-products-chart.tsx
@@ -310,20 +342,23 @@ components/
 
 services/
 ├── excel-parser.service.ts       # 49-column parser (adapter Excel headers)
+├── earnings-parser.service.ts    # Parser sheet Penghasilan (adapter headers)
 ├── order.service.ts              # Status mapping + queries + reset
+├── earnings.service.ts           # Upsert + agregasi penghasilan
 ├── profit.service.ts             # Profit calculations
 └── export.service.ts             # CSV/Excel/PDF generators
 
 db/
 ├── index.ts                      # SQLite connection
-└── schema.ts                     # Drizzle schema
+└── schema.ts                     # Drizzle schema (4 tables)
 
 utils/
 ├── format.ts                     # Currency/number formatting
 └── date.ts                       # Date parsing (marketplace format)
 
 types/
-└── order.types.ts                # All TypeScript types
+├── order.types.ts                # Order types
+└── earnings.types.ts             # Settlement/earnings types
 
 scripts/
 ├── setup-db.ts                   # DB initialization
@@ -389,5 +424,5 @@ npm run dev
 
 **Last Updated**: October 8, 2026  
 **Status**: 🟢 Working with real data  
-**Latest Commit**: `3b8d5d9` — multi-format export  
+**Latest Commit**: `499f219` — refactor: hapus subtitle panel  
 **Next Update**: Setelah PR-A (filter periode)

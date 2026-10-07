@@ -89,18 +89,62 @@ db.exec(`
     status TEXT NOT NULL DEFAULT 'success'
   );
 
+  CREATE TABLE IF NOT EXISTS order_earnings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_number TEXT NOT NULL UNIQUE,
+    release_date TEXT,
+    release_method TEXT,
+    order_created_date TEXT,
+    total_earnings REAL NOT NULL,
+    product_price REAL,
+    refund_to_buyer REAL,
+    shipping_paid_by_buyer REAL,
+    shipping_paid_to_courier REAL,
+    shipping_discount_from_courier REAL,
+    free_shipping_from_platform REAL,
+    return_shipping_fee REAL,
+    return_to_seller_fee REAL,
+    shipping_cost_refund REAL,
+    seller_sponsored_voucher REAL,
+    seller_sponsored_coin_cashback REAL,
+    platform_product_discount REAL,
+    co_fund_voucher REAL,
+    co_fund_coin_cashback REAL,
+    admin_fee REAL,
+    order_process_fee REAL,
+    free_shipping_xtra_fee REAL,
+    transaction_fee REAL,
+    service_fee_promo_xtra REAL,
+    campaign_fee REAL,
+    ams_commission_fee REAL,
+    auto_topup_fee REAL,
+    premium REAL,
+    fbs_fee REAL,
+    pph22 REAL,
+    buyer_username TEXT,
+    buyer_paid_amount REAL,
+    buyer_payment_method TEXT,
+    courier TEXT,
+    courier_name TEXT,
+    voucher_code TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+
   CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
   CREATE INDEX IF NOT EXISTS idx_orders_product_name ON orders(product_name);
   CREATE INDEX IF NOT EXISTS idx_orders_order_created_at ON orders(order_created_at);
   CREATE INDEX IF NOT EXISTS idx_orders_buyer_username ON orders(buyer_username);
   CREATE INDEX IF NOT EXISTS idx_orders_city ON orders(city);
   CREATE INDEX IF NOT EXISTS idx_orders_province ON orders(province);
+  CREATE INDEX IF NOT EXISTS idx_order_earnings_release_date ON order_earnings(release_date);
 `)
 
 console.log('✅ Tables created successfully')
 console.log('   - orders')
 console.log('   - products')
 console.log('   - import_history')
+console.log('   - order_earnings')
 console.log('✅ Indexes created successfully')
 console.log('')
 console.log('🎉 Database initialized successfully!')

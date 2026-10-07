@@ -1,97 +1,16 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, FileSpreadsheet, CheckCircle2, XCircle, Loader2, RotateCcw } from 'lucide-react'
+import { useState, useCallback } from 'react'
+import { RotateCcw, Package, Wallet, FileSpreadsheet, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
-import { formatNumber } from '@/utils/format'
+import { FileUploadZone } from '@/components/import/file-upload-zone'
 
 export default function ImportPage() {
-  const [isDragging, setIsDragging] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [result, setResult] = useState<{
-    inserted: number
-    skipped: number
-    totalRows: number
-    fileName: string
-  } | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
   const [resetting, setResetting] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const handleFile = useCallback(async (file: File) => {
-    setUploading(true)
-    setError(null)
-    setResult(null)
-
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/import', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        setResult({
-          inserted: data.data.inserted,
-          skipped: data.data.skipped,
-          totalRows: data.data.totalRows,
-          fileName: data.data.fileName,
-        })
-        toast.success(`Berhasil mengimport ${data.data.inserted} pesanan!`)
-      } else {
-        setError(data.error || 'Gagal mengimport file')
-        toast.error(data.error || 'Gagal mengimport file')
-      }
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Terjadi kesalahan'
-      setError(message)
-      toast.error(message)
-    } finally {
-      setUploading(false)
-    }
-  }, [])
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault()
-      setIsDragging(false)
-
-      const files = e.dataTransfer.files
-      if (files.length > 0) {
-        handleFile(files[0])
-      }
-    },
-    [handleFile]
-  )
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
-      handleFile(files[0])
-    }
-    // Reset input
-    e.target.value = ''
-  }
 
   const handleReset = useCallback(async () => {
     setResetting(true)
@@ -101,8 +20,6 @@ export default function ImportPage() {
 
       if (data.success) {
         toast.success('Semua data berhasil dihapus')
-        setResult(null)
-        setError(null)
       } else {
         toast.error(data.error || 'Gagal mereset data')
       }
@@ -136,164 +53,71 @@ export default function ImportPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Upload File Excel</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Drop Zone */}
-          <motion.div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            animate={{
-              borderColor: isDragging
-                ? '#3b82f6'
-                : error
-                  ? '#ef4444'
-                  : '#cbd5e1',
-              backgroundColor: isDragging
-                ? '#eff6ff'
-                : error
-                  ? '#fef2f2'
-                  : '#f8fafc',
-            }}
-            transition={{ duration: 0.2 }}
-            className="flex cursor-pointer flex-col items-center justify-center space-y-4 rounded-xl border-2 border-dashed p-12 transition-colors"
-            onClick={() => !uploading && fileInputRef.current?.click()}
-          >
-            <motion.div
-              animate={{
-                scale: isDragging ? 1.1 : 1,
-                y: isDragging ? -5 : 0,
-              }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className={`flex h-16 w-16 items-center justify-center rounded-full ${
-                isDragging ? 'bg-blue-100' : 'bg-slate-100'
-              }`}
-            >
-              {uploading ? (
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-              ) : (
-                <Upload
-                  className={`h-8 w-8 ${
-                    isDragging ? 'text-blue-500' : 'text-slate-400'
-                  }`}
-                />
-              )}
-            </motion.div>
-
-            <div className="text-center">
-              <p className="font-semibold text-slate-900">
-                {uploading
-                  ? 'Sedang mengupload...'
-                  : isDragging
-                    ? 'Lepaskan file di sini'
-                    : 'Drag & drop file Excel atau klik untuk memilih'}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Support format .xlsx dan .xls (maksimal 50MB)
-              </p>
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleFileSelect}
-              className="hidden"
+      {/* Two imports: orders + earnings. They are matched to each other by
+          order number, so importing both gives the full financial picture. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Package className="h-4.5 w-4.5 text-blue-600" />
+              1. File Pesanan
+            </CardTitle>
+            <p className="mt-1 text-sm text-slate-500">
+              Daftar pesanan dari menu <strong>My Orders</strong>
+            </p>
+          </CardHeader>
+          <CardContent>
+            <FileUploadZone
+              accent="blue"
+              endpoint="/api/import"
+              itemLabel="pesanan"
+              note="File harus memiliki kolom: No. Pesanan, Status Pesanan, Nama Produk, dan Total Pembayaran"
             />
-          </motion.div>
+          </CardContent>
+        </Card>
 
-          {/* Error Message */}
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-4 overflow-hidden"
-              >
-                <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
-                  <XCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
-                  <div>
-                    <p className="text-sm font-semibold text-red-800">
-                      Gagal Import
-                    </p>
-                    <p className="mt-1 text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Wallet className="h-4.5 w-4.5 text-emerald-600" />
+              2. File Penghasilan
+            </CardTitle>
+            <p className="mt-1 text-sm text-slate-500">
+              Laporan penghasilan &amp; semua biaya platform
+            </p>
+          </CardHeader>
+          <CardContent>
+            <FileUploadZone
+              accent="emerald"
+              endpoint="/api/import-earnings"
+              itemLabel="data penghasilan"
+              note="File harus memiliki sheet Penghasilan dengan kolom No. Pesanan dan Total Penghasilan"
+            />
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Success Result */}
-          <AnimatePresence>
-            {result && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-4 overflow-hidden"
-              >
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500" />
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-emerald-800">
-                        Import Berhasil!
-                      </p>
-                      <p className="mt-1 text-sm text-emerald-700">
-                        File <strong>{result.fileName}</strong> berhasil
-                        diproses
-                      </p>
-
-                      <div className="mt-3 grid grid-cols-3 gap-3">
-                        <div className="rounded-lg bg-white p-3">
-                          <p className="text-xs text-slate-500">Total Baris</p>
-                          <p className="text-lg font-bold text-slate-900">
-                            {formatNumber(result.totalRows)}
-                          </p>
-                        </div>
-                        <div className="rounded-lg bg-white p-3">
-                          <p className="text-xs text-slate-500">Terimport</p>
-                          <p className="text-lg font-bold text-emerald-600">
-                            {formatNumber(result.inserted)}
-                          </p>
-                        </div>
-                        <div className="rounded-lg bg-white p-3">
-                          <p className="text-xs text-slate-500">
-                            Duplikat/Skip
-                          </p>
-                          <p className="text-lg font-bold text-amber-600">
-                            {formatNumber(result.skipped)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex gap-2">
-                        <a href="/orders">
-                          <Button size="sm">Lihat Pesanan</Button>
-                        </a>
-                        <a href="/">
-                          <Button size="sm" variant="outline">
-                            Ke Dashboard
-                          </Button>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+      {/* Sync explanation */}
+      <div className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50/70 p-4">
+        <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-500" />
+        <div className="text-sm text-blue-800">
+          <p className="font-semibold">Kedua file saling melengkapi</p>
+          <p className="mt-1 text-blue-700">
+            File pesanan berisi status &amp; detail produk, file penghasilan
+            berisi dana yang masuk dan semua potongan biaya. Keduanya
+            dicocokkan otomatis berdasarkan nomor pesanan. Order yang ada di
+            file penghasilan tapi belum diimport pesanannya tetap disimpan dan
+            ditandai di dashboard.
+          </p>
+        </div>
+      </div>
 
       {/* Instructions */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Cara Export Data dari Marketplace</CardTitle>
+          <CardTitle className="text-base">
+            Cara Export Data dari Marketplace
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ol className="space-y-3 text-sm text-slate-600">
@@ -310,8 +134,9 @@ export default function ImportPage() {
                 2
               </span>
               <span>
-                Pergi ke <strong>My Orders</strong> → pilih tab{' '}
-                <strong>All</strong> atau <strong>To Ship</strong>
+                Untuk pesanan: buka <strong>My Orders</strong> →{' '}
+                <strong>Export</strong> → pilih date range →{' '}
+                <strong>Download</strong>
               </span>
             </li>
             <li className="flex gap-3">
@@ -319,25 +144,24 @@ export default function ImportPage() {
                 3
               </span>
               <span>
-                Klik <strong>Export</strong> → pilih date range →{' '}
-                <strong>Download</strong>
+                Untuk penghasilan: buka <strong>Finance / Saldo</strong> →{' '}
+                <strong>Laporan Penghasilan</strong> → download periode yang
+                sama
               </span>
             </li>
             <li className="flex gap-3">
               <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600">
                 4
               </span>
-              <span>
-                Upload file yang sudah didownload ke form di atas
-              </span>
+              <span>Upload kedua file ke form di atas</span>
             </li>
           </ol>
 
           <div className="mt-4 flex items-center gap-2 rounded-lg bg-blue-50 p-3">
             <FileSpreadsheet className="h-5 w-5 flex-shrink-0 text-blue-500" />
             <p className="text-xs text-blue-700">
-              File harus memiliki kolom: No. Pesanan, Status Pesanan, Nama
-              Produk, dan Total Pembayaran
+              Disarankan import file pesanan dulu, lalu file penghasilan dengan
+              periode yang sama
             </p>
           </div>
         </CardContent>
@@ -347,7 +171,7 @@ export default function ImportPage() {
       <ConfirmDialog
         open={resetOpen}
         title="Reset semua data?"
-        description="Semua pesanan, harga modal produk, dan riwayat import akan dihapus permanen. Tindakan ini tidak dapat dibatalkan. Pastikan Anda sudah backup file Excel aslinya."
+        description="Semua pesanan, data penghasilan, harga modal produk, dan riwayat import akan dihapus permanen. Tindakan ini tidak dapat dibatalkan. Pastikan Anda sudah backup file Excel aslinya."
         confirmLabel="Ya, hapus semua"
         loading={resetting}
         onConfirm={handleReset}
