@@ -20,6 +20,9 @@
 - 🎯 **Smart Filtering** - Filter otomatis berdasarkan status pesanan
 - 💰 **Profit Analysis** - Hitung profit bersih per produk
 - 📤 **Easy Import** - Drag & drop Excel file dari Marketplace
+- 📥 **Multi-Format Export** - Download data sebagai CSV, Excel (.xlsx), atau PDF
+  (Pesanan, Profit, atau Statistik — 9 opsi, semua dari Dashboard)
+- 🗑️ **Reset Data** - Hapus semua data kembali ke kondisi kosong, kapan saja
 - 🎨 **Beautiful UI** - Modern interface dengan smooth animations
 - ⚡ **Fast Performance** - Handle 1000+ orders dengan mudah
 - 🔒 **Privacy First** - Semua data tersimpan lokal (SQLite)
@@ -202,11 +205,14 @@ pnpm dev
 
 ### 3. Filter & Search Orders
 
-- **Global Search**: Cari by order number, product name, customer name
-- **Date Range**: Filter by order date
-- **Status**: Multi-select status filter
-- **Price Range**: Filter by price
-- **Location**: Filter by province/city
+- **Search**: Cari by nomor pesanan, nama produk, username pembeli, nama penerima,
+  atau nomor resi — tersedia di setiap halaman pesanan
+- **Status**: Pindah antar halaman (Semua / Perlu Dikirim / Dikirim / Selesai /
+  Dibatalkan) untuk filter by status
+- **Pagination**: 10 / 25 / 50 / 100 baris per halaman
+
+> ℹ️ **Filter periode (date range), price range, dan lokasi ada di backlog** —
+> lihat `CHANGELOG.md` bagian Backlog PR-A sampai PR-E.
 
 ### 4. View Order Details
 
@@ -218,13 +224,32 @@ Klik pada row order untuk melihat detail lengkap (49 fields):
 - Customer information
 - Timeline
 
-### 5. Analisis Profit (Phase 1.2)
+### 5. Export Data (CSV / Excel / PDF)
 
-1. Pergi ke **Analisis Profit** → **Product Cost Management**
-2. Input harga pokok (modal) per produk
-3. Sistem otomatis calculate profit
-4. Lihat profit per produk, margin, ROI
-5. Export report
+Dari halaman **Dashboard**, klik tombol **Export Data** di kanan atas:
+
+- **Data Pesanan** — CSV (49 kolom lengkap), Excel, atau PDF tabel multi-halaman
+- **Analisis Profit** — CSV, Excel (dengan ringkasan), atau PDF laporan
+- **Statistik Dashboard** — CSV, Excel, atau PDF laporan ringkasan (1-2 halaman)
+
+File otomatis terdownload dengan nama `bisnisku-{tipe}-{tanggal}.{format}`.
+
+### 6. Analisis Profit
+
+1. Pergi ke **Analisis Profit** → **Kelola Harga Modal**
+2. Input harga pokok (modal) per produk, lalu klik **Simpan**
+3. Sistem otomatis calculate profit, margin, dan ROI
+4. Lihat produk terbaik/terburuk berdasarkan laba
+5. Export laporan profit lewat tombol Export Data di Dashboard
+
+> ⚠️ Saat ini input modal harus per produk satu-satu. Bulk input
+> ("Simpan Semua" / import Excel) ada di backlog **PR-D**.
+
+### 7. Reset Data
+
+Pergi ke **Import Data** → klik **Reset Data** untuk menghapus SEMUA data
+(orders + harga modal + riwayat import) kembali ke kondisi kosong.
+Ada dialog konfirmasi sebelum penghapusan.
 
 ---
 
@@ -251,30 +276,40 @@ Detail lengkap: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
 
 ## 🗺️ Roadmap
 
-### ✅ Phase 1.0 - MVP (Week 1-3)
-- [ ] Project setup
-- [ ] Import Excel functionality
-- [ ] Dashboard with basic metrics
-- [ ] All 5 order status pages
-- [ ] Search & filtering
-- [ ] Order detail view
+### ✅ Phase 1.0 - MVP (Week 1-3) — DONE
+- [x] Project setup
+- [x] Import Excel functionality
+- [x] Dashboard with basic metrics
+- [x] All 5 order status pages
+- [x] Search & filtering
+- [x] Order detail view
 
-### ⏳ Phase 1.1 - Enhancement (Week 4-5)
-- [ ] Professional animations
-- [ ] Advanced charts
-- [ ] Export functionality
-- [ ] Responsive design
-- [ ] Error handling & loading states
+### ✅ Phase 1.1 - Enhancement (Week 4-5) — DONE
+- [x] Professional animations
+- [x] Advanced charts
+- [x] Export functionality (CSV / Excel / PDF)
+- [x] Responsive design
+- [x] Error handling & loading states
 
 ### ⏳ Phase 1.2 - Profit Analysis (Week 6-7)
-- [ ] Product cost management
-- [ ] Profit calculation
-- [ ] Performance reports
-- [ ] ROI analytics
+- [x] Product cost management
+- [x] Profit calculation
+- [x] Performance reports
+- [x] ROI analytics
+- [ ] Bulk input modal (PR-D)
+
+### 🔮 Backlog Berikutnya (post-1.2)
+- **PR-A** Filter periode (Hari Ini / 7 / 30 Hari / Bulan Ini / Custom)
+- **PR-B** Badge jumlah pesanan di sidebar
+- **PR-C** Sorot & sort deadline pengiriman lewat
+- **PR-D** Bulk input harga modal
+- **PR-E** Analisis pelanggan/wilayah
+- **PR-F** Perbandingan periode
+- **PR-G** Print packing slip/label
+- **PR-H** Dark mode
 
 ### 🔮 Phase 2.0 - Future
 - Multi-file import
-- Dark mode
 - Multi-language (EN/ID)
 - Email notifications
 - Mobile app version

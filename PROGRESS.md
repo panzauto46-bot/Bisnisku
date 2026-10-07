@@ -1,8 +1,8 @@
 # 📊 BisnisKu - Development Progress Tracker
 
-**Last Updated**: October 7, 2026  
-**Current Phase**: Phase 1.0 COMPLETE - Pushed to GitHub  
-**Overall Progress**: 90%
+**Last Updated**: October 8, 2026  
+**Current Phase**: Phase 1.0 COMPLETE — Enhancement & Profit hampir selesai  
+**Overall Progress**: 93%
 
 ---
 
@@ -15,8 +15,8 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ### 🐙 Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `bd1ed7a` - feat: BisnisKu v1.0.0
-- **Files**: 65 files, 18.000+ baris kode
+- **Latest Commit**: `3b8d5d9` — feat: multi-format data export
+- **Files**: 70+ files, 20.000+ baris kode
 
 ### Verifikasi Data (Oct 7, 2026)
 
@@ -44,8 +44,29 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 1.0 - MVP | 98% | 🟢 Complete |
-| Phase 1.1 - Enhancement | 80% | 🟢 In Progress |
-| Phase 1.2 - Profit Analysis | 85% | 🟢 In Progress |
+| Phase 1.1 - Enhancement | 95% | 🟢 Export selesai, tinggal filter periode |
+| Phase 1.2 - Profit Analysis | 85% | 🟡 Engine siap, modal produk belum diisi |
+
+---
+
+## ✨ Update Terbaru (Oct 7-8, 2026)
+
+### Multi-Format Export (Oct 8) — commit `3b8d5d9`
+- Tambah `GET /api/export?type={orders|profit|stats}&format={csv|xlsx|pdf}`
+- 9 kombinasi export, semua teruji return 200 + file valid
+- Dropdown `ExportMenu` di header dashboard, download sungguhan + toast
+
+### Reset Data (Oct 7) — commit `4671287`
+- `DELETE /api/reset` + `resetAllData()`
+- Dialog konfirmasi reusable, tombol di halaman Import
+- Tested: 698 orders + 1 product + 6 history → 0
+
+### Kolom Alasan Pembatalan (Oct 7) — commit `09c3bf5` + `868084c`
+- Kolom conditional di halaman Dibatalkan, badge merah
+- Awalnya `truncate` → diperbaiki jadi full text wrap
+
+### License & Authorship (Oct 7) — commit `b8529b6`
+- MIT License, Copyright (c) 2026 Pandu Dargah
 
 ---
 
@@ -180,6 +201,23 @@ yang berisiko kena hak cipta/sanksi trademark.
 - [x] `GET /api/charts/payment-methods` - Payment distribution
 - [x] `GET/POST /api/products` - Product cost management
 - [x] `GET /api/profit` - Profit analysis
+- [x] `DELETE /api/reset` - Reset semua data
+- [x] `GET /api/export?type=&format=` - Export CSV/Excel/PDF
+
+### 10. Export Multi-Format ✅ (VERIFIED)
+- [x] CSV — semua 49 kolom, UTF-8 (BOM), siap olah di Excel
+- [x] Excel (.xlsx) — SheetJS, sheet terpisah per jenis data
+- [x] PDF — jsPDF + autotable, header branded, nomor halaman, footer
+- [x] 3 jenis data: Pesanan, Profit, Statistik
+- [x] Dropdown menu di header dashboard (9 opsi)
+- [x] Download sungguhan via browser + toast notifikasi
+- [x] Nama file otomatis ikut tanggal (mis. `bisnisku-orders-2026-10-08.csv`)
+
+### 11. Reset Data ✅ (VERIFIED)
+- [x] Hapus SEMUA data (orders + product costs + import history)
+- [x] Dialog konfirmasi reusable (`ConfirmDialog`)
+- [x] Tombol di halaman Import
+- [x] Tested: 698 orders + 1 product + 6 history → 0 semua
 
 ---
 
@@ -190,25 +228,28 @@ yang berisiko kena hak cipta/sanksi trademark.
 - [x] Push to GitHub (https://github.com/panzauto46-bot/Bisnisku)
 - [ ] Final end-to-end testing
 
-### Phase 1.1 - Enhancement (20% remaining)
-- [ ] Export table to CSV/Excel
-- [ ] Date range picker filter
+### Phase 1.1 - Enhancement (5% remaining)
+- [x] Export table to CSV/Excel ✅ (Oct 8)
+- [x] PDF export ✅ (Oct 8)
+- [ ] **PR-A** Date range picker / filter periode
 - [ ] Advanced filters (province, city, price range)
 - [ ] Error boundary components
 - [ ] Empty state illustrations
 
 ### Phase 1.2 - Profit Analysis (15% remaining)
-- [ ] Bulk import costs from CSV
+- [ ] **PR-D** Bulk import costs (Simpan Semua / import Excel)
 - [ ] Profit trend chart over time
 - [ ] ROI visualization
 - [ ] Marketplace fee configuration
 
-### Future (Phase 2.0)
-- [ ] Dark mode toggle
-- [ ] Multi-language (EN/ID)
-- [ ] Custom date range reports
-- [ ] PDF export
-- [ ] Auto-refresh data
+### Backlog PR Berikutnya (post-1.2, lihat CHANGELOG.md untuk detail)
+- [ ] **PR-A** Filter Periode — quick filter + custom range, export ikut periode
+- [ ] **PR-B** Badge jumlah pesanan di sidebar
+- [ ] **PR-C** Sorot & sort deadline pengiriman yang sudah lewat
+- [ ] **PR-E** Analisis Pelanggan/Wilayah (kota, provinsi, repeat buyer)
+- [ ] **PR-F** Perbandingan Periode (bulan ini vs bulan lalu)
+- [ ] **PR-G** Print Packing Slip/Label pengiriman
+- [ ] **PR-H** Dark Mode
 
 ---
 
@@ -228,7 +269,7 @@ yang berisiko kena hak cipta/sanksi trademark.
 ```
 app/
 ├── layout.tsx                    # Root layout
-├── page.tsx                      # Dashboard
+├── page.tsx                      # Dashboard (+ ExportMenu)
 ├── globals.css                   # Global styles
 ├── api/
 │   ├── import/route.ts
@@ -239,19 +280,22 @@ app/
 │   ├── charts/products/route.ts
 │   ├── charts/payment-methods/route.ts
 │   ├── products/route.ts
-│   └── profit/route.ts
+│   ├── profit/route.ts
+│   ├── reset/route.ts            # DELETE — reset semua data
+│   └── export/route.ts           # GET — CSV/Excel/PDF
 ├── orders/page.tsx
 ├── pending/page.tsx
 ├── shipped/page.tsx
 ├── completed/page.tsx
 ├── cancelled/page.tsx
-├── import/page.tsx
+├── import/page.tsx               # + tombol Reset Data
 └── profit/page.tsx
 
 components/
 ├── layout/sidebar.tsx
 ├── layout/header.tsx
 ├── dashboard/metric-card.tsx
+├── dashboard/export-menu.tsx     # Dropdown export 9 opsi
 ├── orders/orders-table.tsx
 ├── orders/order-detail-modal.tsx
 ├── charts/revenue-chart.tsx
@@ -260,13 +304,15 @@ components/
 ├── charts/payment-chart.tsx
 ├── shared/status-badge.tsx
 ├── shared/animated-counter.tsx
+├── shared/confirm-dialog.tsx     # Dialog konfirmasi reusable
 ├── ui/card.tsx
 └── ui/button.tsx
 
 services/
-├── excel-parser.service.ts       # 49-column parser
-├── order.service.ts              # Status mapping + queries
-└── profit.service.ts             # Profit calculations
+├── excel-parser.service.ts       # 49-column parser (adapter Excel headers)
+├── order.service.ts              # Status mapping + queries + reset
+├── profit.service.ts             # Profit calculations
+└── export.service.ts             # CSV/Excel/PDF generators
 
 db/
 ├── index.ts                      # SQLite connection
@@ -302,10 +348,24 @@ scripts/
 
 ## 🎯 Next Priorities
 
-1. **Git init & commit** - Version control
-2. **Export CSV/Excel** - User requested feature
-3. **Date range filter** - Better data exploration
-4. **Final polish** - UI/UX refinements
+**Urutan rekomendasi (dari audit Oct 8, 2026):**
+
+1. **PR-A — Filter Periode** ⭐ prioritas tertinggi
+   - Backend `dateFrom`/`dateTo` SUDAH ada di `order.service.ts` (baris 143-186)
+   - Tinggal bikin UI: quick filter (Hari Ini / 7 Hari / 30 Hari / Bulan Ini)
+     + custom range picker
+   - Dashboard, halaman pesanan, dan export ikut periode yang dipilih
+
+2. **PR-B — Badge jumlah di sidebar**
+   - "Perlu Dikirim (14)" langsung kelihatan tanpa buka halaman
+
+3. **PR-C — Sorot deadline pengiriman**
+   - Kolom `shipByDeadline` sudah ada; pesanan lewat deadline di-highlight merah
+   - Sort by urgency di halaman Perlu Dikirim
+
+4. **PR-D — Bulk input harga modal**
+   - Sekarang simpan per produk (83 produk = 83 klik) → fitur profit belum dipakai
+   - "Simpan Semua" sekaligus + opsi import modal dari Excel/CSV
 
 ---
 
@@ -327,6 +387,7 @@ npm run dev
 
 ---
 
-**Last Updated**: October 7, 2026  
+**Last Updated**: October 8, 2026  
 **Status**: 🟢 Working with real data  
-**Next Update**: After export feature completion
+**Latest Commit**: `3b8d5d9` — multi-format export  
+**Next Update**: Setelah PR-A (filter periode)

@@ -318,16 +318,16 @@ Total Timeline           : ~7 weeks  (49 days)
 ### Overall Progress
 ```
 Phase 1.0 (MVP)          : ██████████████████████░░ 98%  ✅ Complete
-Phase 1.1 (Enhancement)  : ████████████████████░░░░ 80%  🟢 In Progress
-Phase 1.2 (Profit)       : █████████████████████░░░ 85%  🟢 In Progress
+Phase 1.1 (Enhancement)  : ████████████████████░░░░ 95%  🟢 Export done
+Phase 1.2 (Profit)       : █████████████████████░░░ 85%  🟡 Needs cost data
 ```
 
-**Total Progress**: ~90%
+**Total Progress**: ~93%
 
 ### GitHub Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `bd1ed7a`
+- **Latest Commit**: `3b8d5d9` — feat: multi-format data export
 
 ---
 
@@ -338,10 +338,31 @@ Phase 1.2 (Profit)       : █████████████████�
 - [x] **Milestone 3**: All pages functional (Oct 7)
 - [x] **Milestone 4**: MVP complete (Oct 7) 🎉
 - [x] **Milestone 4.5**: Dummy data bug fixed + pushed to GitHub (Oct 7)
-- [ ] **Milestone 5**: Animations finalized
-- [ ] **Milestone 6**: UI polish complete 🎉
-- [ ] **Milestone 7**: Profit features ready
+- [x] **Milestone 4.6**: Trademark rebrand + reset data + license (Oct 7)
+- [x] **Milestone 4.7**: Multi-format export CSV/Excel/PDF (Oct 8)
+- [ ] **Milestone 5**: Filter periode (PR-A)
+- [ ] **Milestone 6**: Operational features — sidebar badge + deadline alert (PR-B, PR-C)
+- [ ] **Milestone 7**: Profit features fully usable — bulk cost input (PR-D)
 - [ ] **Milestone 8**: Production ready 🚀
+
+---
+
+## 📋 Backlog PR Berikutnya (Oct 8, 2026)
+
+Detail lengkap ada di `CHANGELOG.md` bagian **Backlog — Prioritas PR Berikutnya**.
+
+| # | PR | Dampak | Effort |
+|---|----|--------|--------|
+| A | Filter Periode + export ikut periode | ⭐⭐⭐ | Kecil — backend sudah ada |
+| B | Badge jumlah pesanan di sidebar | ⭐⭐ | Kecil |
+| C | Sorot & sort deadline pengiriman lewat | ⭐⭐⭐ | Kecil-Menengah |
+| D | Bulk input harga modal | ⭐⭐⭐ | Menengah |
+| E | Analisis Pelanggan/Wilayah | ⭐⭐ | Menengah |
+| F | Perbandingan Periode | ⭐⭐ | Menengah |
+| G | Print Packing Slip/Label | ⭐⭐ | Kecil-Menengah |
+| H | Dark Mode | ⭐ | Menengah |
+
+**Urutan rekomendasi**: A → B → C → D
 
 ---
 
@@ -374,5 +395,6 @@ Phase 1.2 (Profit)       : █████████████████�
 
 ---
 
-**Last Updated**: October 7, 2026  
-**Status**: Phase 1.0 Complete - Pushed to GitHub
+**Last Updated**: October 8, 2026  
+**Status**: Phase 1.0 Complete — Export done — Backlog PR-A..H disusun  
+**Next**: PR-A Filter Periode

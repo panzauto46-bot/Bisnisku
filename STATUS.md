@@ -1,8 +1,9 @@
 # 🎯 BisnisKu - Current Status
 
-**Last Updated**: October 7, 2026  
+**Last Updated**: October 8, 2026  
 **Phase**: Phase 1.0 COMPLETE  
-**Status**: 🟢 WORKING WITH REAL DATA + PUSHED TO GITHUB
+**Status**: 🟢 WORKING WITH REAL DATA + PUSHED TO GITHUB  
+**Latest Commit**: `3b8d5d9` — feat: multi-format data export
 
 ---
 
@@ -12,13 +13,14 @@
 ┌─────────────────────────────────────────────────────┐
 │                                                     │
 │  ✅ PHASE 1.0 MVP COMPLETE                          │
-│  ✅ DATA ASLI TER-IMPORT (670 pesanan)              │
+│  ✅ DATA ASLI TER-IMPORT                            │
 │  ✅ DASHBOARD MENAMPILKAN STATISTIK AKTUAL          │
 │  ✅ SEMUA 5 HALAMAN PESANAN BERFUNGSI               │
-│  ✅ BUG DUMMY DATA SUDAH DIPERBAIKI                 │
+│  ✅ EXPORT CSV / EXCEL / PDF SUDAH JALAN            │
+│  ✅ RESET DATA SUDAH JALAN                          │
 │  ✅ SUDAH PUSH KE GITHUB                            │
 │                                                     │
-│  Progress: ██████████████████████████████████░░ 90% │
+│  Progress: ██████████████████████████████████░░ 93% │
 │                                                     │
 └─────────────────────────────────────────────────────┘
 ```
@@ -34,110 +36,67 @@
 |------|-------|
 | URL | https://github.com/panzauto46-bot/Bisnisku |
 | Branch | `master` |
-| Latest Commit | `bd1ed7a` |
-| Files | 65 files |
-| Lines | 18.000+ baris |
+| Latest Commit | `3b8d5d9` — feat: multi-format data export |
+| Files | 70+ files |
+| Lines | 20.000+ baris kode |
 
 ---
 
-## ✅ Verified Working (Oct 7, 2026)
+## ✅ Fitur yang Sudah Selesai & Teruji
 
-### Dashboard - Data Asli
-```
-Semua Pesanan      : 670
-Perlu Dikirim      : 10
-Dikirim            : 213
-Selesai            : 328
-Dibatalkan         : 119
-Total Pendapatan   : Rp 27.517.101
-Rata-rata/Pesanan  : Rp 83.894
-Total Diskon       : Rp 17.307.840
-Total Ongkir       : Rp 995.985
-Tingkat Selesai    : 49.0%
-Tingkat Batal      : 17.8%
-```
+### Data & Import
+- ✅ Import Excel drag & drop, 49 kolom, deteksi duplikat
+- ✅ Reset Data (hapus semua: orders + modal + history) dengan konfirmasi
+- ✅ Data 100% asli dari Excel user (dinamis, sesuai import terakhir)
 
-### Charts - Data Asli
-- ✅ Revenue trend (6 Sep - 28 Sep 2026)
-- ✅ Top 10 produk (Knop Baut Ketupat, Velocity Stack, dll)
-- ✅ Payment methods (COD, QRIS, SPayLater, dll)
-- ✅ Status distribution
+### Dashboard
+- ✅ 5 metric cards + 4 revenue cards
+- ✅ 4 charts (revenue trend, status, top products, payment methods)
+- ✅ Tingkat penyelesaian & pembatalan
+- ✅ **Export Data** — dropdown 9 opsi (CSV/Excel/PDF × Pesanan/Profit/Statistik)
 
-### Order Pages - Data Asli
-- ✅ `/orders` - 670 pesanan dengan pagination
-- ✅ `/pending` - 10 pesanan
-- ✅ `/shipped` - 213 pesanan
-- ✅ `/completed` - 328 pesanan
-- ✅ `/cancelled` - 119 pesanan
-- ✅ Detail modal - 49 fields lengkap
+### Order Pages (5 halaman)
+- ✅ Semua / Perlu Dikirim / Dikirim / Selesai / Dibatalkan
+- ✅ Search (no pesanan, produk, pembeli, resi) + pagination
+- ✅ Detail modal 49 fields + copy-to-clipboard
+- ✅ Kolom Alasan Pembatalan di halaman Dibatalkan (full text, tidak truncate)
+
+### Profit
+- ✅ Input harga modal per produk
+- ✅ Profit stats cards + performance report
+- ⚠️ **Belum terpakai maksimal** — modal masih Rp 0 karena belum diisi
+  (lihat backlog PR-D: bulk input modal)
 
 ---
 
-## 🔧 Bug Fixes Applied (Oct 7, 2026)
+## 📋 Backlog PR Berikutnya
 
-### Critical: Dummy Data Override
-**Problem**: Next.js memprioritaskan `src/app`, menampilkan prototype
-lama dengan data dummy ("1,248", "#ORD-9001").
+Lihat detail lengkap di `CHANGELOG.md` bagian **Backlog — Prioritas PR Berikutnya**.
 
-**Fix**:
-- ✅ Hapus folder `src/` (prototype dummy)
-- ✅ Fix `components.json` path
-- ✅ Fix `drizzle.config.ts` path
-- ✅ Update `PROJECT_STRUCTURE.md`
-- ✅ Verifikasi data asli tampil di browser
-- ✅ Production build pass
+| # | PR | Dampak | Effort |
+|---|----|--------|--------|
+| **A** | Filter Periode (Hari Ini / 7 / 30 Hari / Bulan Ini / Custom) + export ikut periode | ⭐⭐⭐ | Kecil — backend sudah ada |
+| **B** | Badge jumlah pesanan di sidebar | ⭐⭐ | Kecil |
+| **C** | Sorot & sort deadline pengiriman yang sudah lewat | ⭐⭐⭐ | Kecil-Menengah |
+| **D** | Bulk input harga modal (Simpan Semua / import Excel) | ⭐⭐⭐ | Menengah |
+| **E** | Analisis Pelanggan/Wilayah (kota, provinsi, repeat buyer) | ⭐⭐ | Menengah |
+| **F** | Perbandingan Periode (bulan ini vs bulan lalu) | ⭐⭐ | Menengah |
+| **G** | Print Packing Slip/Label pengiriman | ⭐⭐ | Kecil-Menengah |
+| **H** | Dark Mode | ⭐ | Menengah |
 
----
-
-## 🔒 Trademark Safety Rebrand (Oct 7, 2026)
-
-**Problem**: Nama brand "Shopee" bertebaran di UI & kode → risiko hak cipta.
-
-**Fix**:
-- ✅ UI: "Shopee Dashboard" → "Marketplace Dashboard"
-- ✅ Labels: "Diskon dari Shopee" → "Diskon dari Platform", dst.
-- ✅ Import page: "Shopee Seller Center" → "Marketplace Seller Center"
-- ✅ `RawOrder` pakai nama generik; header Excel hanya di 1 adapter file
-- ✅ Kolom DB: `shopee_discount` → `platform_discount`, dll.
-- ✅ Re-import 670 orders, semua angka verified sama
+**Urutan rekomendasi**: A → B → C → D
 
 ---
 
 ## 📊 Phase Progress
 
-### Phase 1.0 - MVP: 98% ✅
-```
-██████████████████████████████████████████████████░░ 98%
-```
+| Phase | Progress | Status |
+|-------|----------|--------|
+| Phase 1.0 - MVP | 98% | ✅ Complete |
+| Phase 1.1 - Enhancement | 95% | 🟢 Export selesai, tinggal filter periode |
+| Phase 1.2 - Profit | 85% | 🟡 Engine siap, modal belum diisi |
 
-### Phase 1.1 - Enhancement: 80%
-```
-████████████████████████████████████████████░░░░░░ 80%
-```
-
-### Phase 1.2 - Profit: 85%
-```
-█████████████████████████████████████████████░░░░░ 85%
-```
-
----
-
-## 🚧 Remaining Tasks
-
-### High Priority
-- [ ] Export CSV/Excel
-- [ ] Date range filter
-- [ ] Final end-to-end testing
-
-### Medium Priority
-- [ ] Advanced filters (province, city, price)
-- [ ] Bulk import product costs
-- [ ] Profit trend chart
-
-### Low Priority
-- [ ] Dark mode
-- [ ] Multi-language
-- [ ] PDF export
+**Total Progress**: ~93%
 
 ---
 
@@ -146,6 +105,8 @@ lama dengan data dummy ("1,248", "#ORD-9001").
 1. **Port 3000 in use** → Using port 3001 (workaround)
 2. **Slow first compile** → Dev server compiles on-demand (expected)
 3. **Counter animation** → Shows 0 for ~1 second then actual value (by design)
+4. **`next build` + `next dev` barengan** → cache `.next` korup → dashboard
+   kosong. Fix: kill node, hapus `.next`, restart dev server.
 
 ---
 
@@ -167,4 +128,4 @@ lama dengan data dummy ("1,248", "#ORD-9001").
 **Status**: 🟢 On Track  
 **Data**: 100% Real (from Excel export)  
 **Version Control**: ✅ GitHub  
-**Next Update**: After export feature
+**Next Update**: Setelah PR-A (filter periode)
