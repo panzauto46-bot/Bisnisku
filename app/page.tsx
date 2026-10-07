@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { MetricCard } from '@/components/dashboard/metric-card'
 import { ExportMenu } from '@/components/dashboard/export-menu'
+import { DiscountBreakdownCard } from '@/components/dashboard/discount-breakdown'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency, formatNumber, formatPercentage } from '@/utils/format'
 import type { DashboardStats } from '@/types/order.types'
@@ -134,6 +135,7 @@ export default function DashboardPage() {
           color="amber"
           format={formatCurrency}
           index={7}
+          subtitle="Diskon produk: penjual + platform + voucher penjual. Lihat rincian di bawah."
         />
         <MetricCard
           title="Total Ongkir"
@@ -142,8 +144,17 @@ export default function DashboardPage() {
           color="slate"
           format={formatCurrency}
           index={8}
+          subtitle="Ongkir yang dibayar pembeli, dari order Selesai."
         />
       </div>
+
+      {/* Discount & shipping breakdown — full transparency on every
+          deduction component the platform applies */}
+      <DiscountBreakdownCard
+        discount={stats.discountBreakdown}
+        shipping={stats.shippingBreakdown}
+        completedCount={stats.completed}
+      />
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

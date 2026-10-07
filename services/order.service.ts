@@ -253,6 +253,11 @@ export async function getOrders(
 
 /**
  * Get dashboard statistics
+ *
+ * Money metrics (revenue, discount, shipping) are computed from COMPLETED
+ * orders only, so every rupiah shown is money that actually moved. Counting
+ * cancelled orders in the discount/shipping totals made them look far larger
+ * than what was really transacted.
  */
 export async function getDashboardStats(): Promise<DashboardStats> {
   // Get all orders
@@ -266,6 +271,19 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   let totalRevenue = 0
   let totalDiscount = 0
   let totalShipping = 0
+
+  // Per-component deduction totals (completed orders only)
+  let sellerDiscount = 0
+  let platformDiscount = 0
+  let sellerVoucher = 0
+  let platformVoucher = 0
+  let platformCoinDeduction = 0
+  let coinCashback = 0
+  let creditCardDiscount = 0
+  let shippingPaidByBuyer = 0
+  let estimatedShipping = 0
+  let estimatedShippingDiscount = 0
+  let returnShippingFee = 0
 
   allOrders.forEach((order) => {
     total++
@@ -281,15 +299,36 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       case 'completed':
         completed++
         totalRevenue += order.totalPayment || 0
+
+        // Deductions that actually happened on a paid order
+        totalDiscount += order.totalDiscount || 0
+        totalShipping += order.shippingFeePaidByBuyer || 0
+
+        sellerDiscount += order.sellerDiscount || 0
+        platformDiscount += order.platformDiscount || 0
+        sellerVoucher += order.sellerVoucher || 0
+        platformVoucher += order.platformVoucher || 0
+        platformCoinDeduction += order.platformCoinDeduction || 0
+        coinCashback += order.coinCashback || 0
+        creditCardDiscount += order.creditCardDiscount || 0
+        shippingPaidByBuyer += order.shippingFeePaidByBuyer || 0
+        estimatedShipping += order.estimatedShipping || 0
+        estimatedShippingDiscount += order.estimatedShippingDiscount || 0
+        returnShippingFee += order.returnShippingFee || 0
         break
       case 'cancelled':
         cancelled++
         break
     }
-
-    totalDiscount += order.totalDiscount || 0
-    totalShipping += order.shippingFeePaidByBuyer || 0
   })
+
+  // "Total Diskon" from the export only covers product-price discounts
+  // (seller + platform + seller voucher). Platform vouchers, coins and
+  // card discounts are subtracted at checkout and are NOT in that column.
+  const totalProductDiscount =
+    sellerDiscount + platformDiscount + sellerVoucher
+  const totalPlatformDeduction =
+    platformVoucher + platformCoinDeduction + coinCashback + creditCardDiscount
 
   return {
     total,
@@ -302,6 +341,24 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     averageOrderValue: completed > 0 ? totalRevenue / completed : 0,
     totalDiscount,
     totalShipping,
+    discountBreakdown: {
+      sellerDiscount,
+      platformDiscount,
+      sellerVoucher,
+      platformVoucher,
+      platformCoinDeduction,
+      coinCashback,
+      creditCardDiscount,
+      totalProductDiscount,
+      totalPlatformDeduction,
+      totalAllDeductions: totalProductDiscount + totalPlatformDeduction,
+    },
+    shippingBreakdown: {
+      paidByBuyer: shippingPaidByBuyer,
+      estimatedShipping,
+      estimatedShippingDiscount,
+      returnShippingFee,
+    },
     completionRate: total > 0 ? (completed / total) * 100 : 0,
     cancellationRate: total > 0 ? (cancelled / total) * 100 : 0,
   }

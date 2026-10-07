@@ -308,7 +308,6 @@ export function statsToPdf(
       value: `${stats.completionRate.toFixed(1)}%`,
     },
   ]
-
   const cardWidth = (width - 28 - 8) / 3
   cards.forEach((card, index) => {
     const col = index % 3
@@ -353,6 +352,64 @@ export function statsToPdf(
     styles: { fontSize: 9, cellPadding: 3 },
     headStyles: { fillColor: [37, 99, 235], textColor: 255 },
     columnStyles: { 1: { halign: 'right' as const }, 2: { halign: 'right' as const } },
+    didDrawPage: () => pdfFooter(doc),
+  })
+
+  y = (doc as any).lastAutoTable.finalY + 10
+
+  /* --- Platform deduction breakdown --- */
+  doc.setFontSize(11)
+  doc.setTextColor(INK)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Rincian Potongan Platform', 14, y)
+  doc.setFontSize(8)
+  doc.setTextColor(MUTED)
+  doc.setFont('helvetica', 'normal')
+  doc.text('Setiap komponen potongan, dari order Selesai', 14, y + 4.5)
+  y += 8
+
+  autoTable(doc, {
+    head: [['Komponen Potongan', 'Jumlah']],
+    body: [
+      ['Diskon dari Penjual', formatRupiah(stats.discountBreakdown.sellerDiscount)],
+      ['Diskon dari Platform', formatRupiah(stats.discountBreakdown.platformDiscount)],
+      ['Voucher Ditanggung Penjual', formatRupiah(stats.discountBreakdown.sellerVoucher)],
+      ['Voucher Ditanggung Platform', formatRupiah(stats.discountBreakdown.platformVoucher)],
+      ['Potongan Koin Platform', formatRupiah(stats.discountBreakdown.platformCoinDeduction)],
+      ['Cashback Koin', formatRupiah(stats.discountBreakdown.coinCashback)],
+      ['Diskon Kartu Kredit', formatRupiah(stats.discountBreakdown.creditCardDiscount)],
+      ['Ongkos Kirim Dibayar Pembeli', formatRupiah(stats.shippingBreakdown.paidByBuyer)],
+      ['Estimasi Potongan Biaya Pengiriman', formatRupiah(stats.shippingBreakdown.estimatedShippingDiscount)],
+      ['Ongkos Kirim Pengembalian', formatRupiah(stats.shippingBreakdown.returnShippingFee)],
+    ],
+    startY: y,
+    margin: { left: 14, right: 14 },
+    styles: { fontSize: 9, cellPadding: 3 },
+    headStyles: { fillColor: [37, 99, 235], textColor: 255 },
+    columnStyles: { 1: { halign: 'right' as const } },
+    didDrawPage: () => pdfFooter(doc),
+  })
+
+  y = (doc as any).lastAutoTable.finalY
+
+  // Total row, styled distinctly
+  autoTable(doc, {
+    body: [
+      [
+        'TOTAL SEMUA POTONGAN',
+        formatRupiah(stats.discountBreakdown.totalAllDeductions),
+      ],
+    ],
+    startY: y,
+    margin: { left: 14, right: 14 },
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+      fillColor: [254, 243, 199],
+      textColor: [120, 53, 15],
+      fontStyle: 'bold',
+    },
+    columnStyles: { 1: { halign: 'right' as const } },
     didDrawPage: () => pdfFooter(doc),
   })
 

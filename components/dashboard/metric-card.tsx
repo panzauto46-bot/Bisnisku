@@ -13,6 +13,7 @@ interface MetricCardProps {
   format?: (value: number) => string
   color?: 'blue' | 'amber' | 'emerald' | 'red' | 'slate'
   index?: number
+  subtitle?: string
 }
 
 const colorConfig = {
@@ -60,6 +61,7 @@ export function MetricCard({
   format,
   color = 'blue',
   index = 0,
+  subtitle,
 }: MetricCardProps) {
   const config = colorConfig[color]
 
@@ -97,6 +99,11 @@ export function MetricCard({
                 )}
               />
             </div>
+            {subtitle && (
+              <p className="mt-1 text-[11px] leading-tight text-slate-400">
+                {subtitle}
+              </p>
+            )}
           </div>
 
           <motion.div

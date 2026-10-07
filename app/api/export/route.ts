@@ -349,6 +349,22 @@ function buildStatsXlsx(
     ['Tingkat Penyelesaian', `${stats.completionRate.toFixed(1)}%`],
     ['Tingkat Pembatalan', `${stats.cancellationRate.toFixed(1)}%`],
     [],
+    ['Rincian Potongan Platform (order Selesai)', ''],
+    ['Diskon dari Penjual', formatRupiah(stats.discountBreakdown.sellerDiscount)],
+    ['Diskon dari Platform', formatRupiah(stats.discountBreakdown.platformDiscount)],
+    ['Voucher Ditanggung Penjual', formatRupiah(stats.discountBreakdown.sellerVoucher)],
+    ['Voucher Ditanggung Platform', formatRupiah(stats.discountBreakdown.platformVoucher)],
+    ['Potongan Koin Platform', formatRupiah(stats.discountBreakdown.platformCoinDeduction)],
+    ['Cashback Koin', formatRupiah(stats.discountBreakdown.coinCashback)],
+    ['Diskon Kartu Kredit', formatRupiah(stats.discountBreakdown.creditCardDiscount)],
+    ['Total Potongan Lainnya (platform)', formatRupiah(stats.discountBreakdown.totalPlatformDeduction)],
+    ['TOTAL SEMUA POTONGAN', formatRupiah(stats.discountBreakdown.totalAllDeductions)],
+    [],
+    ['Ongkos Kirim Dibayar Pembeli', formatRupiah(stats.shippingBreakdown.paidByBuyer)],
+    ['Perkiraan Ongkos Kirim', formatRupiah(stats.shippingBreakdown.estimatedShipping)],
+    ['Estimasi Potongan Biaya Pengiriman', formatRupiah(stats.shippingBreakdown.estimatedShippingDiscount)],
+    ['Ongkos Kirim Pengembalian', formatRupiah(stats.shippingBreakdown.returnShippingFee)],
+    [],
   ]
 
   const productHeader = ['Produk', 'Jumlah', 'Pendapatan']
@@ -393,6 +409,22 @@ function buildStatsCsv(
   lines.push(`Tingkat Penyelesaian,${stats.completionRate.toFixed(1)}%`)
   lines.push(`Tingkat Pembatalan,${stats.cancellationRate.toFixed(1)}%`)
   lines.push('')
+  lines.push('Rincian Potongan Platform (order Selesai),')
+  lines.push(`Diskon dari Penjual,"${formatRupiah(stats.discountBreakdown.sellerDiscount)}"`)
+  lines.push(`Diskon dari Platform,"${formatRupiah(stats.discountBreakdown.platformDiscount)}"`)
+  lines.push(`Voucher Ditanggung Penjual,"${formatRupiah(stats.discountBreakdown.sellerVoucher)}"`)
+  lines.push(`Voucher Ditanggung Platform,"${formatRupiah(stats.discountBreakdown.platformVoucher)}"`)
+  lines.push(`Potongan Koin Platform,"${formatRupiah(stats.discountBreakdown.platformCoinDeduction)}"`)
+  lines.push(`Cashback Koin,"${formatRupiah(stats.discountBreakdown.coinCashback)}"`)
+  lines.push(`Diskon Kartu Kredit,"${formatRupiah(stats.discountBreakdown.creditCardDiscount)}"`)
+  lines.push(`Total Potongan Lainnya (platform),"${formatRupiah(stats.discountBreakdown.totalPlatformDeduction)}"`)
+  lines.push(`TOTAL SEMUA POTONGAN,"${formatRupiah(stats.discountBreakdown.totalAllDeductions)}"`)
+  lines.push('')
+  lines.push(`Ongkos Kirim Dibayar Pembeli,"${formatRupiah(stats.shippingBreakdown.paidByBuyer)}"`)
+  lines.push(`Perkiraan Ongkos Kirim,"${formatRupiah(stats.shippingBreakdown.estimatedShipping)}"`)
+  lines.push(`Estimasi Potongan Biaya Pengiriman,"${formatRupiah(stats.shippingBreakdown.estimatedShippingDiscount)}"`)
+  lines.push(`Ongkos Kirim Pengembalian,"${formatRupiah(stats.shippingBreakdown.returnShippingFee)}"`)
+  lines.push('')
   lines.push('Produk,Jumlah,Pendapatan')
   topProducts.forEach((p) =>
     lines.push(`"${p.name.replace(/"/g, '""')}",${p.quantity},"${formatRupiah(p.revenue)}"`)
@@ -410,6 +442,3 @@ function buildStatsCsv(
   return '\uFEFF' + lines.join('\r\n')
 }
 
-export const EXPORT_FORMATS = ['csv', 'xlsx', 'pdf'] as const
-
-export const EXPORT_TYPES = ['orders', 'profit', 'stats'] as const

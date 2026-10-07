@@ -160,6 +160,34 @@ export interface PaginatedOrders {
 }
 
 /**
+ * Breakdown of every deduction component the platform applies,
+ * so the seller can see exactly what was subtracted.
+ * Basis: completed orders only (same as totalRevenue).
+ */
+export interface DiscountBreakdown {
+  /** Product-price discounts (the Excel "Total Diskon" column) */
+  sellerDiscount: number
+  platformDiscount: number
+  sellerVoucher: number
+  /** Payment-level platform deductions (NOT inside "Total Diskon") */
+  platformVoucher: number
+  platformCoinDeduction: number
+  coinCashback: number
+  creditCardDiscount: number
+  /** Totals */
+  totalProductDiscount: number
+  totalPlatformDeduction: number
+  totalAllDeductions: number
+}
+
+export interface ShippingBreakdown {
+  paidByBuyer: number
+  estimatedShipping: number
+  estimatedShippingDiscount: number
+  returnShippingFee: number
+}
+
+/**
  * Dashboard statistics
  */
 export interface DashboardStats {
@@ -173,6 +201,8 @@ export interface DashboardStats {
   averageOrderValue: number
   totalDiscount: number
   totalShipping: number
+  discountBreakdown: DiscountBreakdown
+  shippingBreakdown: ShippingBreakdown
   completionRate: number
   cancellationRate: number
 }
