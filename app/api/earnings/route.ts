@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getEarningsStats, getEarningsReconciliation } from '@/services/earnings.service'
+import { getEarningsStats } from '@/services/earnings.service'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    const [stats, reconciliation] = await Promise.all([
-      getEarningsStats(),
-      getEarningsReconciliation(),
-    ])
+    const stats = await getEarningsStats()
 
     if (!stats) {
       return NextResponse.json({
@@ -21,7 +18,6 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: stats,
-      reconciliation,
     })
   } catch (error) {
     console.error('Get earnings stats error:', error)

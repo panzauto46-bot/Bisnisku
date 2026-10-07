@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
@@ -6,15 +6,10 @@ import { Wallet, Upload, TrendingUp, TrendingDown } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency } from '@/utils/format'
-import type {
-  EarningsStats,
-  EarningsReconciliation,
-} from '@/types/earnings.types'
+import type { EarningsStats } from '@/types/earnings.types'
 
 export function EarningsPanel() {
   const [stats, setStats] = useState<EarningsStats | null>(null)
-  const [reconciliation, setReconciliation] =
-    useState<EarningsReconciliation | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -27,7 +22,6 @@ export function EarningsPanel() {
       const data = await response.json()
       if (data.success) {
         setStats(data.data)
-        setReconciliation(data.reconciliation ?? null)
       }
     } catch (error) {
       console.error('Error fetching earnings stats:', error)
@@ -271,11 +265,6 @@ export function EarningsPanel() {
               </div>
             </div>
           </div>
-
-          {/* Cross-check against the order file */}
-          {reconciliation && (
-            <ReconciliationSection recon={reconciliation} />
-          )}
         </CardContent>
       </Card>
     </motion.div>
@@ -293,110 +282,6 @@ function FeeRow({ label, value }: { label: string; value: number }) {
       >
         {formatCurrency(value)}
       </span>
-    </div>
-  )
-}
-
-function ReconciliationSection({ recon }: { recon: EarningsReconciliation }) {
-  const shippingDiff =
-    recon.shippingPaidByBuyer.earnings - recon.shippingPaidByBuyer.orders
-
-  // Ongkir pembeli adalah satu-satunya kolom yang definisinya persis sama di
-  // kedua file, jadi ini indikator sinkronisasi yang valid. Total pembayaran
-  // sengaja tidak dibandingkan: kolomnya berbeda definisi (total yang harus
-  // dibayar vs jumlah yang benar-benar dibayarkan), sehingga selisihnya
-  // bukan tanda data tak sinkron melainkan cuma beda cara pencatatan.
-  const allSync = Math.abs(shippingDiff) < 1
-
-  return (
-    <div className="mt-2 rounded-xl border border-blue-100 bg-blue-50/50 p-4">
-      <div className="flex items-center gap-2">
-        <h4 className="text-sm font-semibold text-slate-900">
-          Cek Silang ke File Pesanan
-        </h4>
-        <span
-          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-            allSync
-              ? 'bg-emerald-100 text-emerald-700'
-              : 'bg-amber-100 text-amber-700'
-          }`}
-        >
-          {allSync ? '✓ Sinkron' : '⚠ Ada selisih'}
-        </span>
-      </div>
-      <p className="mt-0.5 text-xs text-slate-500">
-        Kedua file dibandingkan hanya untuk{' '}
-        <strong>{recon.matchedCount} order Selesai</strong> yang ada di
-        kedua-duanya — jadi bandingkan angka yang sama
-      </p>
-
-      <div className="mt-3 space-y-2.5">
-        <ReconRow
-          label="Ongkir Dibayar Pembeli"
-          ordersValue={recon.shippingPaidByBuyer.orders}
-          earningsValue={recon.shippingPaidByBuyer.earnings}
-          diff={shippingDiff}
-        />
-      </div>
-
-      <p className="mt-3 text-[11px] leading-relaxed text-slate-500">
-        Panel <strong>Rincian Potongan Platform</strong> menghitung dari file
-        pesanan, panel ini dari file penghasilan (angka real yang keluar).
-        Ongkir pembeli dipakai sebagai patokan karena kolomnya persis sama di
-        kedua file — kalau cocok, kedua file berasal dari toko dan periode
-        yang sama.
-      </p>
-    </div>
-  )
-}
-
-function ReconRow({
-  label,
-  ordersValue,
-  earningsValue,
-  diff,
-}: {
-  label: string
-  ordersValue: number
-  earningsValue: number
-  diff: number
-}) {
-  const inSync = Math.abs(diff) < 1
-
-  return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-slate-700">{label}</span>
-        {inSync ? (
-          <span className="text-[11px] font-semibold text-emerald-600">
-            ✓ cocok
-          </span>
-        ) : (
-          <span
-            className={`text-[11px] font-semibold tabular-nums ${
-              diff < 0 ? 'text-red-600' : 'text-amber-600'
-            }`}
-          >
-            {diff < 0
-              ? '−' + formatCurrency(Math.abs(diff))
-              : formatCurrency(diff)}
-          </span>
-        )}
-      </div>
-      <div className="mt-1.5 grid grid-cols-2 gap-2 text-xs">
-        <div className="rounded bg-slate-50 px-2 py-1.5">
-          <span className="text-slate-500">File Pesanan</span>
-          <p className="font-medium tabular-nums text-slate-700">
-            {formatCurrency(ordersValue)}
-          </p>
-        </div>
-        <div className="rounded bg-emerald-50 px-2 py-1.5">
-          <span className="text-emerald-600">File Penghasilan</span>
-          <p className="font-medium tabular-nums text-emerald-700">
-            {formatCurrency(earningsValue)}
-          </p>
-        </div>
-      </div>
     </div>
   )
 }

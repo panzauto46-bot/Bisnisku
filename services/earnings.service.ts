@@ -5,7 +5,6 @@ import type {
   RawEarnings,
   OrderEarnings,
   EarningsStats,
-  EarningsReconciliation,
   EarningsImportResult,
 } from '@/types/earnings.types'
 
@@ -219,53 +218,6 @@ export async function getEarningsByOrderNumber(
     .limit(1)
 
   return rows.length > 0 ? (rows[0] as OrderEarnings) : null
-}
-
-/**
- * Compare the two imported files over the orders they share.
- *
- * The dashboard's deduction panel counts completed orders from the order
- * file, while the earnings panel counts every settlement row. Those are
- * different order sets, so their totals legitimately differ. This function
- * restricts both files to the same orders (present in both, completed) so
- * the numbers can finally be compared apples-to-apples.
- */
-export async function getEarningsReconciliation(): Promise<EarningsReconciliation | null> {
-  const matched = await db
-    .select({
-      orderShipping: orders.shippingFeePaidByBuyer,
-      orderTotal: orders.totalPayment,
-      earningsShipping: orderEarnings.shippingPaidByBuyer,
-      earningsPaid: orderEarnings.buyerPaidAmount,
-    })
-    .from(orderEarnings)
-    .innerJoin(orders, eq(orders.orderNumber, orderEarnings.orderNumber))
-    .where(eq(orders.status, 'Selesai'))
-
-  if (matched.length === 0) return null
-
-  const sumOr0 = (values: (number | null)[]) =>
-    values.reduce<number>((s, v) => s + (v ?? 0), 0)
-
-  // Orders whose buyer-paid amount disagrees between the two files. A handful
-  // is expected: some exports record the buyer payment as 0 (it lands after
-  // the order file was generated), while the settlement report always has it.
-  const mismatchCount = matched.filter(
-    (r) => Math.abs((r.orderTotal ?? 0) - (r.earningsPaid ?? 0)) > 1
-  ).length
-
-  return {
-    matchedCount: matched.length,
-    mismatchCount,
-    shippingPaidByBuyer: {
-      orders: sumOr0(matched.map((r) => r.orderShipping)),
-      earnings: sumOr0(matched.map((r) => r.earningsShipping)),
-    },
-    totalPayment: {
-      orders: sumOr0(matched.map((r) => r.orderTotal)),
-      earnings: sumOr0(matched.map((r) => r.earningsPaid)),
-    },
-  }
 }
 
 /**
