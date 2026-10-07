@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { orders } from '@/db/schema'
+import { orders, products, importHistory } from '@/db/schema'
 import { eq, and, gte, lte, desc, asc, sql } from 'drizzle-orm'
 import type {
   Order,
@@ -397,4 +397,29 @@ export async function insertOrders(
   }
 
   return { inserted, skipped, errors }
+}
+
+/**
+ * Delete ALL data from the database (orders, products, import history).
+ * Returns the number of deleted rows per table.
+ *
+ * WARNING: This is destructive and cannot be undone.
+ */
+export async function resetAllData(): Promise<{
+  orders: number
+  products: number
+  importHistory: number
+}> {
+  const deletedOrders = await db.delete(orders)
+  const deletedProducts = await db.delete(products)
+  const deletedHistory = await db.delete(importHistory)
+
+  // Reset sqlite autoincrement sequences so IDs start from 1 again
+  await sql`DELETE FROM sqlite_sequence WHERE name IN ('orders', 'products', 'import_history')`
+
+  return {
+    orders: deletedOrders.changes,
+    products: deletedProducts.changes,
+    importHistory: deletedHistory.changes,
+  }
 }

@@ -2,10 +2,11 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, FileSpreadsheet, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { Upload, FileSpreadsheet, CheckCircle2, XCircle, Loader2, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { formatNumber } from '@/utils/format'
 
 export default function ImportPage() {
@@ -18,6 +19,8 @@ export default function ImportPage() {
     fileName: string
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [resetOpen, setResetOpen] = useState(false)
+  const [resetting, setResetting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = useCallback(async (file: File) => {
@@ -90,13 +93,47 @@ export default function ImportPage() {
     e.target.value = ''
   }
 
+  const handleReset = useCallback(async () => {
+    setResetting(true)
+    try {
+      const response = await fetch('/api/reset', { method: 'DELETE' })
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success('Semua data berhasil dihapus')
+        setResult(null)
+        setError(null)
+      } else {
+        toast.error(data.error || 'Gagal mereset data')
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Terjadi kesalahan'
+      toast.error(message)
+    } finally {
+      setResetting(false)
+      setResetOpen(false)
+    }
+  }, [])
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Import Data</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Upload file Excel export dari Marketplace Seller Center
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Import Data</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Upload file Excel export dari Marketplace Seller Center
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setResetOpen(true)}
+          className="flex-shrink-0 border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Reset Data
+        </Button>
       </div>
 
       <Card>
@@ -305,6 +342,17 @@ export default function ImportPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Reset Confirmation Dialog */}
+      <ConfirmDialog
+        open={resetOpen}
+        title="Reset semua data?"
+        description="Semua pesanan, harga modal produk, dan riwayat import akan dihapus permanen. Tindakan ini tidak dapat dibatalkan. Pastikan Anda sudah backup file Excel aslinya."
+        confirmLabel="Ya, hapus semua"
+        loading={resetting}
+        onConfirm={handleReset}
+        onCancel={() => !resetting && setResetOpen(false)}
+      />
     </div>
   )
 }
