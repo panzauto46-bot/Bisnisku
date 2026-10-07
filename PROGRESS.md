@@ -15,7 +15,7 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ### 🐙 Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `499f219` — refactor: hapus subtitle panel yang redundant
+- **Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
 - **Files**: 80+ files, 22.000+ baris kode
 
 ### Verifikasi Data (Oct 7, 2026)
@@ -424,5 +424,5 @@ npm run dev
 
 **Last Updated**: October 8, 2026  
 **Status**: 🟢 Working with real data  
-**Latest Commit**: `499f219` — refactor: hapus subtitle panel  
+**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
 **Next Update**: Setelah PR-A (filter periode)

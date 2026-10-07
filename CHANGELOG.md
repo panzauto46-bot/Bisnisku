@@ -348,4 +348,4 @@ Removed all marketplace brand references to avoid trademark/copyright issues:
 ---
 
 **Last Updated**: October 8, 2026  
-**Latest Commit**: `3b8d5d9` — feat: multi-format data export
+**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform

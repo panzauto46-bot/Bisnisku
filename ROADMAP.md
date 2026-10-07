@@ -327,7 +327,7 @@ Phase 1.2 (Profit)       : █████████████████�
 ### GitHub Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `499f219` — refactor: hapus subtitle panel yang redundant
+- **Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
 
 ---
 

@@ -5,7 +5,7 @@
 **Status**: 🟢 WORKING WITH REAL DATA — MVP complete, export & penghasilan done  
 **Estimated Timeline**: 7 weeks (49 days)  
 **Repo**: https://github.com/panzauto46-bot/Bisnisku  
-**Latest Commit**: `499f219` — refactor: hapus subtitle panel yang redundant
+**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
 
 ---
 
