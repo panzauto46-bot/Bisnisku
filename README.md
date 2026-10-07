@@ -451,7 +451,7 @@ pnpm type-check
 
 ## 📄 License
 
-MIT License - see [LICENSE](./LICENSE) for details
+MIT License - Copyright (c) 2026 **Pandu Dargah**. See [LICENSE](./LICENSE) for details.
 
 ---
 

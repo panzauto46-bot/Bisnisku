@@ -2,6 +2,8 @@
   "name": "bisnisku",
   "version": "0.1.0",
   "private": true,
+  "author": "Pandu Dargah",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
