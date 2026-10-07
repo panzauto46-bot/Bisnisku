@@ -13,6 +13,7 @@ import {
   Percent,
 } from 'lucide-react'
 import { MetricCard } from '@/components/dashboard/metric-card'
+import { ExportMenu } from '@/components/dashboard/export-menu'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { formatCurrency, formatNumber, formatPercentage } from '@/utils/format'
 import type { DashboardStats } from '@/types/order.types'
@@ -58,11 +59,15 @@ export default function DashboardPage() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
+        className="flex items-start justify-between gap-4"
       >
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Ringkasan performa toko Anda
-        </p>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Ringkasan performa toko Anda
+          </p>
+        </div>
+        <ExportMenu />
       </motion.div>
 
       {/* Metric Cards */}
