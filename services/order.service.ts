@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { orders, products, importHistory, orderEarnings } from '@/db/schema'
-import { eq, and, gte, lte, desc, asc, sql } from 'drizzle-orm'
+import { eq, and, gte, lte, desc, asc, inArray, sql } from 'drizzle-orm'
 import type {
   Order,
   OrderStatus,
@@ -236,10 +236,23 @@ export async function getOrders(
 
   const total = countResult[0]?.count || 0
 
+  // Cek order mana yang sudah ada di file penghasilan yang di-import
+  // (tabel order_earnings). Dipakai untuk badge "Sudah Cair / Belum Cair"
+  // di tabel pesanan. Murni membaca hasil import Excel, tidak ada API call.
+  const orderNumbers = result.map((o) => o.orderNumber)
+  const earningsRows = orderNumbers.length
+    ? await db
+        .select({ orderNumber: orderEarnings.orderNumber })
+        .from(orderEarnings)
+        .where(inArray(orderEarnings.orderNumber, orderNumbers))
+    : []
+  const earningsSet = new Set(earningsRows.map((r) => r.orderNumber))
+
   // Add status category to each order
   const ordersWithCategory: OrderWithCategory[] = result.map((order) => ({
     ...order,
     statusCategory: mapStatusCategory(order as Order),
+    hasEarnings: earningsSet.has(order.orderNumber),
   }))
 
   return {

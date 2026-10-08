@@ -131,7 +131,7 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className={`w-full text-left text-sm ${status === 'cancelled' ? 'min-w-[1150px]' : 'min-w-[900px]'}`}>
+            <table className={`w-full text-left text-sm ${status === 'cancelled' ? 'min-w-[1250px]' : 'min-w-[1000px]'}`}>
               <thead className="border-b border-slate-200 bg-slate-50">
                 <tr>
                   <th className="px-4 py-3 font-semibold text-slate-600">
@@ -139,6 +139,9 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
                   </th>
                   <th className="px-4 py-3 font-semibold text-slate-600">
                     Status
+                  </th>
+                  <th className="px-4 py-3 font-semibold text-slate-600">
+                    Penghasilan
                   </th>
                   {status === 'cancelled' && (
                     <th className="px-4 py-3 font-semibold text-slate-600">
@@ -188,6 +191,12 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge category={order.statusCategory} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <EarningsBadge
+                        hasEarnings={order.hasEarnings}
+                        category={order.statusCategory}
+                      />
                     </td>
                     {status === 'cancelled' && (
                       <td className="px-4 py-3">
@@ -317,6 +326,47 @@ export function OrdersTable({ status = 'all', title }: OrdersTableProps) {
         )}
       </AnimatePresence>
     </div>
+  )
+}
+
+/**
+ * Badge status penghasilan — menandakan apakah order sudah ada di file
+ * penghasilan yang di-import (dananya sudah dilepaskan platform).
+ *
+ - Sudah Cair  : ada di order_earnings (data dari import file penghasilan)
+ - Belum Cair  : belum ada di file penghasilan (dana belum dilepas)
+ - Tidak Ada   : order dibatalkan, tidak akan pernah ada penghasilan
+ */
+function EarningsBadge({
+  hasEarnings,
+  category,
+}: {
+  hasEarnings?: boolean
+  category: OrderStatus
+}) {
+  if (category === 'cancelled') {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500">
+        <XCircle className="h-3 w-3" />
+        Tidak Ada
+      </span>
+    )
+  }
+
+  if (hasEarnings) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
+        <CheckCircle2 className="h-3 w-3" />
+        Sudah Cair
+      </span>
+    )
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-700">
+      <Clock className="h-3 w-3" />
+      Belum Cair
+    </span>
   )
 }
 

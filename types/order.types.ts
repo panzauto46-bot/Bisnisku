@@ -124,9 +124,14 @@ export interface Order {
 
 /**
  * Order with computed category status
+ *
+ * `hasEarnings` menandakan apakah order sudah ada di file penghasilan yang
+ * di-import (artinya dananya sudah dilepaskan platform). Murni dibaca dari
+ * tabel order_earnings — tidak ada koneksi API ke marketplace.
  */
 export interface OrderWithCategory extends Order {
   statusCategory: OrderStatus
+  hasEarnings?: boolean
 }
 
 /**
