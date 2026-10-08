@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wallet, Loader2, Upload } from 'lucide-react'
-import Link from 'next/link'
+import { Wallet, Loader2 } from 'lucide-react'
 import { formatCurrency } from '@/utils/format'
 import type { OrderEarnings } from '@/types/earnings.types'
 import type { OrderWithCategory } from '@/types/order.types'
@@ -164,21 +163,7 @@ export function EarningsDetailSection({ order }: EarningsDetailSectionProps) {
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             Memuat data penghasilan...
           </div>
-        ) : !hasSettlementData ? (
-          <div className="mt-4 rounded-lg border border-dashed border-emerald-200 bg-white/70 p-3">
-            <p className="text-xs leading-relaxed text-slate-500">
-              Rincian biaya platform belum tersedia karena order ini belum ada
-              di file penghasilan yang di-import.
-            </p>
-            <Link
-              href="/import"
-              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 hover:text-emerald-800"
-            >
-              <Upload className="h-3.5 w-3.5" />
-              Import file penghasilan
-            </Link>
-          </div>
-        ) : (
+        ) : hasSettlementData ? (
           <>
             <div className="mt-4 space-y-3 border-t border-emerald-200 pt-3">
               <GroupBlock title="Biaya Platform" rows={platformFeeRows} />
@@ -211,7 +196,7 @@ export function EarningsDetailSection({ order }: EarningsDetailSectionProps) {
               </div>
             </div>
           </>
-        )}
+        ) : null}
       </div>
     </motion.div>
   )
