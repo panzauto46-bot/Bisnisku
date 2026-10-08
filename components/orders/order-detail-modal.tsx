@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import {
   X,
   Package,
-  CreditCard,
   Truck,
   User,
   Calendar,
@@ -14,7 +13,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { StatusBadge } from '@/components/shared/status-badge'
-import { OrderEarningsSection } from '@/components/orders/order-earnings-section'
+import { EarningsDetailSection } from '@/components/orders/earnings-detail-section'
 import { formatCurrency } from '@/utils/format'
 import { formatDateTime } from '@/utils/date'
 import type { OrderWithCategory } from '@/types/order.types'
@@ -163,70 +162,10 @@ export function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
             </div>
           </Section>
 
-          {/* Pricing Section */}
-          <Section icon={CreditCard} title="Harga & Diskon">
-            <div className="space-y-1">
-              <PriceRow
-                label="Harga Awal"
-                value={order.originalPrice}
-              />
-              <PriceRow
-                label="Harga Setelah Diskon"
-                value={order.discountedPrice}
-              />
-              <div className="flex items-center justify-between px-3 py-2">
-                <span className="text-sm text-slate-500">Jumlah</span>
-                <span className="text-sm font-medium text-slate-900">
-                  {order.quantity}
-                </span>
-              </div>
-              <PriceRow label="Subtotal Pesanan" value={order.subtotal} />
-              <PriceRow
-                label="Total Diskon"
-                value={order.totalDiscount}
-                negative
-              />
-              <PriceRow
-                label="Diskon dari Penjual"
-                value={order.sellerDiscount}
-                negative
-              />
-              <PriceRow
-                label="Diskon dari Platform"
-                value={order.platformDiscount}
-                negative
-              />
-              <PriceRow
-                label="Voucher Ditanggung Penjual"
-                value={order.sellerVoucher}
-                negative
-              />
-              <PriceRow
-                label="Voucher Ditanggung Platform"
-                value={order.platformVoucher}
-                negative
-              />
-              <PriceRow
-                label="Potongan Koin Platform"
-                value={order.platformCoinDeduction}
-                negative
-              />
-              <PriceRow
-                label="Cashback Koin"
-                value={order.coinCashback}
-              />
-              <div className="mt-2 border-t border-slate-200 pt-2">
-                <PriceRow
-                  label="Total Pembayaran"
-                  value={order.totalPayment}
-                  bold
-                />
-              </div>
-            </div>
-          </Section>
-
-          {/* Earnings & platform fees from the settlement report */}
-          <OrderEarningsSection orderNumber={order.orderNumber} />
+          {/* Rincian Penghasilan — disusun seperti settlement report Seller
+              Center: subtotal pesanan → voucher → kelompok biaya → total
+              penghasilan. Menggabungkan data file pesanan & file penghasilan. */}
+          <EarningsDetailSection order={order} />
 
           {/* Shipping Section */}
           <Section icon={Truck} title="Pengiriman">
