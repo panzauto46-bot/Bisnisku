@@ -6,6 +6,8 @@ import {
   profitToCsv,
   profitToPdf,
   statsToPdf,
+  earningsToCsv,
+  earningsToPdf,
   formatRupiah,
   type ExportFormat,
   type ExportType,
@@ -13,11 +15,12 @@ import {
   type ProductPoint,
   type PaymentPoint,
   type ProfitRow,
+  type EarningsRow,
 } from '@/services/export.service'
 import { getOrders, getDashboardStats } from '@/services/order.service'
 import { db } from '@/db'
-import { orders, products } from '@/db/schema'
-import { eq, sql } from 'drizzle-orm'
+import { orders, products, orderEarnings } from '@/db/schema'
+import { eq, sql, desc } from 'drizzle-orm'
 import type { DashboardStats } from '@/types/order.types'
 
 export const runtime = 'nodejs'
@@ -153,6 +156,65 @@ async function fetchProfit(): Promise<{ rows: ProfitRow[]; totals: {
   return { rows, totals: { revenue, cost, profit, margin } }
 }
 
+async function fetchEarnings(): Promise<EarningsRow[]> {
+  // Semua order (kiri) + data penghasilan jika ada (kanan). Order tanpa
+  // data penghasilan tetap di-export dengan kolom kosong + status
+  // "Belum Cair" agar jelas mana yang belum ada datanya.
+  const rows = await db
+    .select({
+      orderNumber: orders.orderNumber,
+      status: orders.status,
+      releaseDate: orderEarnings.releaseDate,
+      totalEarnings: orderEarnings.totalEarnings,
+      productPrice: orderEarnings.productPrice,
+      shippingPaidByBuyer: orderEarnings.shippingPaidByBuyer,
+      shippingPaidToCourier: orderEarnings.shippingPaidToCourier,
+      freeShippingFromPlatform: orderEarnings.freeShippingFromPlatform,
+      refundToBuyer: orderEarnings.refundToBuyer,
+      adminFee: orderEarnings.adminFee,
+      orderProcessFee: orderEarnings.orderProcessFee,
+      freeShippingXtraFee: orderEarnings.freeShippingXtraFee,
+      transactionFee: orderEarnings.transactionFee,
+      serviceFeePromoXtra: orderEarnings.serviceFeePromoXtra,
+      campaignFee: orderEarnings.campaignFee,
+      amsCommissionFee: orderEarnings.amsCommissionFee,
+      autoTopupFee: orderEarnings.autoTopupFee,
+      premium: orderEarnings.premium,
+      fbsFee: orderEarnings.fbsFee,
+      pph22: orderEarnings.pph22,
+    })
+    .from(orders)
+    .leftJoin(orderEarnings, eq(orderEarnings.orderNumber, orders.orderNumber))
+    .orderBy(desc(orders.orderCreatedAt))
+
+  return rows.map((r) => {
+    const hasEarnings = r.totalEarnings !== null
+    return {
+      orderNumber: r.orderNumber,
+      status: r.status ?? '-',
+      hasEarnings,
+      releaseDate: r.releaseDate,
+      totalEarnings: r.totalEarnings,
+      productPrice: r.productPrice,
+      shippingPaidByBuyer: r.shippingPaidByBuyer,
+      shippingPaidToCourier: r.shippingPaidToCourier,
+      freeShippingFromPlatform: r.freeShippingFromPlatform,
+      refundToBuyer: r.refundToBuyer,
+      adminFee: r.adminFee,
+      orderProcessFee: r.orderProcessFee,
+      freeShippingXtraFee: r.freeShippingXtraFee,
+      transactionFee: r.transactionFee,
+      serviceFeePromoXtra: r.serviceFeePromoXtra,
+      campaignFee: r.campaignFee,
+      amsCommissionFee: r.amsCommissionFee,
+      autoTopupFee: r.autoTopupFee,
+      premium: r.premium,
+      fbsFee: r.fbsFee,
+      pph22: r.pph22,
+    }
+  })
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                    Route                                     */
 /* -------------------------------------------------------------------------- */
@@ -164,7 +226,7 @@ export async function GET(request: NextRequest) {
     const format = (sp.get('format') || 'csv') as ExportFormat
     const status = sp.get('status') || 'all'
 
-    if (!['orders', 'profit', 'stats'].includes(type)) {
+    if (!['orders', 'profit', 'stats', 'earnings'].includes(type)) {
       return NextResponse.json(
         { success: false, error: 'Tipe export tidak valid' },
         { status: 400 }
@@ -201,6 +263,16 @@ export async function GET(request: NextRequest) {
       } else {
         fileContent = profitToPdf(rows, totals)
       }
+    } else if (type === 'earnings') {
+      const data = await fetchEarnings()
+
+      if (format === 'csv') {
+        fileContent = earningsToCsv(data)
+      } else if (format === 'xlsx') {
+        fileContent = buildEarningsXlsx(data)
+      } else {
+        fileContent = earningsToPdf(data)
+      }
     } else {
       // stats
       const [stats, revenue, topProducts, payments] = await Promise.all([
@@ -218,7 +290,6 @@ export async function GET(request: NextRequest) {
         fileContent = buildStatsCsv(stats, revenue, topProducts, payments)
       }
     }
-
     const body =
       typeof fileContent === 'string'
         ? new TextEncoder().encode(fileContent)
@@ -327,6 +398,85 @@ function buildProfitXlsx(rows: ProfitRow[], totals: {
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Profit')
   return XLSX.write(wb, { type: 'array', bookType: 'xlsx' })
+}
+
+function buildEarningsXlsx(rows: EarningsRow[]): ArrayBuffer {
+  const settled = rows.filter((r) => r.hasEarnings)
+  const totalEarnings = settled.reduce((s, r) => s + (r.totalEarnings ?? 0), 0)
+  const totalProduct = settled.reduce((s, r) => s + Math.abs(r.productPrice ?? 0), 0)
+  const totalFees = settled.reduce((s, r) => s + platformFeesOf(r), 0)
+
+  const summary: (string | number)[][] = [
+    ['Laporan Penghasilan Platform', ''],
+    ['Order sudah cair', settled.length],
+    ['Total pesanan', rows.length],
+    ['Total Penghasilan', formatRupiah(totalEarnings)],
+    ['Harga Produk', formatRupiah(totalProduct)],
+    ['Total Biaya Platform', formatRupiah(totalFees)],
+    [],
+  ]
+
+  const header = [
+    'No. Pesanan', 'Status Pesanan', 'Status Penghasilan',
+    'Tanggal Dana Dilepas', 'Total Penghasilan', 'Harga Produk',
+    'Ongkir Dibayar Pembeli', 'Ongkir ke Jasa Kirim',
+    'Gratis Ongkir dari Platform', 'Pengembalian ke Pembeli',
+    'Biaya Administrasi', 'Biaya Proses Pesanan', 'Biaya Gratis Ongkir XTRA',
+    'Biaya Transaksi', 'Biaya Layanan Promo XTRA+', 'Biaya Kampanye',
+    'Biaya Komisi AMS', 'Biaya Isi Saldo Otomatis', 'Premi', 'FBS Fee',
+    'PPh 22', 'Total Biaya Platform',
+  ]
+
+  const body = rows.map((r) => [
+    r.orderNumber,
+    r.status,
+    r.hasEarnings ? 'Sudah Cair' : 'Belum Cair',
+    (r.releaseDate || '').slice(0, 10),
+    r.totalEarnings ?? '',
+    absNum(r.productPrice),
+    absNum(r.shippingPaidByBuyer),
+    absNum(r.shippingPaidToCourier),
+    absNum(r.freeShippingFromPlatform),
+    absNum(r.refundToBuyer),
+    absNum(r.adminFee),
+    absNum(r.orderProcessFee),
+    absNum(r.freeShippingXtraFee),
+    absNum(r.transactionFee),
+    absNum(r.serviceFeePromoXtra),
+    absNum(r.campaignFee),
+    absNum(r.amsCommissionFee),
+    absNum(r.autoTopupFee),
+    absNum(r.premium),
+    absNum(r.fbsFee),
+    absNum(r.pph22),
+    r.hasEarnings ? platformFeesOf(r) : '',
+  ])
+
+  const aoa = [...summary, header, ...body]
+  const ws = sheetFromAoA(aoa)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Penghasilan')
+  return XLSX.write(wb, { type: 'array', bookType: 'xlsx' })
+}
+
+function absNum(value: number | null | undefined): number | string {
+  return value === null || value === undefined ? '' : Math.abs(value)
+}
+
+function platformFeesOf(row: EarningsRow): number {
+  return (
+    Math.abs(row.adminFee ?? 0) +
+    Math.abs(row.orderProcessFee ?? 0) +
+    Math.abs(row.freeShippingXtraFee ?? 0) +
+    Math.abs(row.transactionFee ?? 0) +
+    Math.abs(row.serviceFeePromoXtra ?? 0) +
+    Math.abs(row.campaignFee ?? 0) +
+    Math.abs(row.amsCommissionFee ?? 0) +
+    Math.abs(row.autoTopupFee ?? 0) +
+    Math.abs(row.premium ?? 0) +
+    Math.abs(row.fbsFee ?? 0) +
+    Math.abs(row.pph22 ?? 0)
+  )
 }
 
 function buildStatsXlsx(

@@ -9,6 +9,7 @@ import {
   FileSpreadsheet,
   TrendingUp,
   BarChart3,
+  Wallet,
   ChevronDown,
   Loader2,
 } from 'lucide-react'
@@ -16,7 +17,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 
 type ExportFormat = 'csv' | 'xlsx' | 'pdf'
-type ExportType = 'orders' | 'profit' | 'stats'
+type ExportType = 'orders' | 'profit' | 'stats' | 'earnings'
 
 interface ExportOption {
   type: ExportType
@@ -80,6 +81,24 @@ const OPTIONS: ExportOption[] = [
     label: 'Statistik - PDF',
     description: 'Laporan ringkasan 1-2 halaman',
   },
+  {
+    type: 'earnings',
+    format: 'csv',
+    label: 'Penghasilan - CSV',
+    description: 'Biaya platform & penghasilan per order',
+  },
+  {
+    type: 'earnings',
+    format: 'xlsx',
+    label: 'Penghasilan - Excel',
+    description: 'Rincian penghasilan + grafik biaya platform',
+  },
+  {
+    type: 'earnings',
+    format: 'pdf',
+    label: 'Penghasilan - PDF',
+    description: 'Laporan penghasilan profesional + grafik',
+  },
 ]
 
 function typeIcon(type: ExportType) {
@@ -90,6 +109,8 @@ function typeIcon(type: ExportType) {
       return TrendingUp
     case 'stats':
       return BarChart3
+    case 'earnings':
+      return Wallet
   }
 }
 
@@ -175,6 +196,7 @@ export function ExportMenu() {
     orders: 'Data Pesanan',
     profit: 'Analisis Profit',
     stats: 'Statistik Dashboard',
+    earnings: 'Penghasilan Platform',
   }
 
   return (

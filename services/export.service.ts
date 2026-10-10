@@ -137,6 +137,99 @@ export function profitToCsv(rows: ProfitRow[]): string {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                       Earnings (settlement report)                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Satu baris laporan penghasilan. Field biaya disimpan negatif di database
+ * (mengikuti file settlement); di export ditampilkan sebagai nilai positif
+ * dengan label "Biaya …" agar mudah dibaca.
+ */
+export interface EarningsRow {
+  orderNumber: string
+  status: string
+  hasEarnings: boolean
+  releaseDate: string | null
+  totalEarnings: number | null
+  productPrice: number | null
+  shippingPaidByBuyer: number | null
+  shippingPaidToCourier: number | null
+  freeShippingFromPlatform: number | null
+  refundToBuyer: number | null
+  adminFee: number | null
+  orderProcessFee: number | null
+  freeShippingXtraFee: number | null
+  transactionFee: number | null
+  serviceFeePromoXtra: number | null
+  campaignFee: number | null
+  amsCommissionFee: number | null
+  autoTopupFee: number | null
+  premium: number | null
+  fbsFee: number | null
+  pph22: number | null
+}
+
+export const EARNINGS_FIELDS: { key: keyof EarningsRow; label: string }[] = [
+  { key: 'orderNumber', label: 'No. Pesanan' },
+  { key: 'status', label: 'Status Pesanan' },
+  { key: 'hasEarnings', label: 'Status Penghasilan' },
+  { key: 'releaseDate', label: 'Tanggal Dana Dilepas' },
+  { key: 'totalEarnings', label: 'Total Penghasilan' },
+  { key: 'productPrice', label: 'Harga Produk' },
+  { key: 'shippingPaidByBuyer', label: 'Ongkir Dibayar Pembeli' },
+  { key: 'shippingPaidToCourier', label: 'Ongkir ke Jasa Kirim' },
+  { key: 'freeShippingFromPlatform', label: 'Gratis Ongkir dari Platform' },
+  { key: 'refundToBuyer', label: 'Pengembalian ke Pembeli' },
+  { key: 'adminFee', label: 'Biaya Administrasi' },
+  { key: 'orderProcessFee', label: 'Biaya Proses Pesanan' },
+  { key: 'freeShippingXtraFee', label: 'Biaya Gratis Ongkir XTRA' },
+  { key: 'transactionFee', label: 'Biaya Transaksi' },
+  { key: 'serviceFeePromoXtra', label: 'Biaya Layanan Promo XTRA+' },
+  { key: 'campaignFee', label: 'Biaya Kampanye' },
+  { key: 'amsCommissionFee', label: 'Biaya Komisi AMS' },
+  { key: 'autoTopupFee', label: 'Biaya Isi Saldo Otomatis' },
+  { key: 'premium', label: 'Premi' },
+  { key: 'fbsFee', label: 'FBS Fee' },
+  { key: 'pph22', label: 'PPh 22' },
+]
+
+/** Total semua biaya platform untuk satu baris (selalu positif). */
+export function rowPlatformFees(row: EarningsRow): number {
+  return (
+    Math.abs(row.adminFee ?? 0) +
+    Math.abs(row.orderProcessFee ?? 0) +
+    Math.abs(row.freeShippingXtraFee ?? 0) +
+    Math.abs(row.transactionFee ?? 0) +
+    Math.abs(row.serviceFeePromoXtra ?? 0) +
+    Math.abs(row.campaignFee ?? 0) +
+    Math.abs(row.amsCommissionFee ?? 0) +
+    Math.abs(row.autoTopupFee ?? 0) +
+    Math.abs(row.premium ?? 0) +
+    Math.abs(row.fbsFee ?? 0) +
+    Math.abs(row.pph22 ?? 0)
+  )
+}
+
+function earningsCell(row: EarningsRow, key: keyof EarningsRow): string | number {
+  const value = row[key]
+  if (value === null || value === undefined) return ''
+  if (key === 'hasEarnings') return value ? 'Sudah Cair' : 'Belum Cair'
+  if (typeof value === 'number') {
+    // Biaya disimpan negatif di DB — tampilkan positif
+    return Math.abs(value)
+  }
+  return value as string
+}
+
+export function earningsToCsv(rows: EarningsRow[]): string {
+  const header = EARNINGS_FIELDS.map((f) => quoteCsv(f.label)).join(',')
+  const body = rows.map((row) =>
+    EARNINGS_FIELDS.map((f) => quoteCsv(earningsCell(row, f.key))).join(',')
+  )
+  return '\uFEFF' + [header, ...body].join('\r\n')
+}
+
+/* -------------------------------------------------------------------------- */
 /*                            Dashboard statistics                             */
 /* -------------------------------------------------------------------------- */
 
@@ -534,6 +627,225 @@ export function profitToPdf(rows: ProfitRow[], totals: {
   return doc.output('arraybuffer')
 }
 
+/**
+ * Horizontal bar chart for the PDF reports, drawn with jsPDF primitives so
+ * it renders server-side without a DOM.
+ */
+function drawBarChart(
+  doc: jsPDF,
+  x: number,
+  y: number,
+  width: number,
+  items: { label: string; value: number }[],
+  accent: [number, number, number] = [37, 99, 235]
+): number {
+  const labelW = 52
+  const valueW = 30
+  const trackW = width - labelW - valueW
+  const barH = 6.5
+  const gap = 2.6
+  const maxValue = Math.max(...items.map((i) => Math.abs(i.value)), 1)
+
+  items.forEach((item, i) => {
+    const by = y + i * (barH + gap)
+    const absValue = Math.abs(item.value)
+
+    // Label (left)
+    doc.setFontSize(6.5)
+    doc.setTextColor(MUTED)
+    doc.setFont('helvetica', 'normal')
+    doc.text(truncate(item.label, 30), x, by + barH / 2 + 2)
+
+    // Track
+    const trackX = x + labelW
+    doc.setFillColor('#f1f5f9')
+    doc.roundedRect(trackX, by, trackW, barH, 1.4, 1.4, 'F')
+
+    // Bar
+    const bw = Math.max(1.2, (absValue / maxValue) * trackW)
+    doc.setFillColor(accent[0], accent[1], accent[2])
+    doc.roundedRect(trackX, by, bw, barH, 1.4, 1.4, 'F')
+
+    // Value (right)
+    doc.setFontSize(6.5)
+    doc.setTextColor(INK)
+    doc.setFont('helvetica', 'bold')
+    doc.text(formatRupiah(absValue), trackX + trackW + 3, by + barH / 2 + 2)
+  })
+
+  return y + items.length * (barH + gap)
+}
+
+/**
+ * PDF #4: earnings (settlement) report — summary cards, platform-fee
+ * composition chart, daily earnings chart, then the full per-order table.
+ */
+export function earningsToPdf(rows: EarningsRow[]): ArrayBuffer {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  const width = doc.internal.pageSize.getWidth()
+
+  const settled = rows.filter((r) => r.hasEarnings)
+  pdfHeader(
+    doc,
+    'Laporan Penghasilan Platform',
+    `${settled.length} order sudah cair dari ${rows.length} total pesanan`
+  )
+
+  const totalEarnings = settled.reduce((s, r) => s + (r.totalEarnings ?? 0), 0)
+  const totalProduct = settled.reduce((s, r) => s + Math.abs(r.productPrice ?? 0), 0)
+  const totalFees = settled.reduce((s, r) => s + rowPlatformFees(r), 0)
+
+  /* --- Summary cards --- */
+  const cards = [
+    { label: 'Total Penghasilan', value: formatRupiah(totalEarnings) },
+    { label: 'Harga Produk', value: formatRupiah(totalProduct) },
+    { label: 'Total Biaya Platform', value: formatRupiah(totalFees) },
+    {
+      label: 'Order Sudah Cair',
+      value: `${settled.length} / ${rows.length}`,
+    },
+  ]
+
+  const cardWidth = (width - 28 - 12) / 4
+  cards.forEach((card, index) => {
+    const x = 14 + index * (cardWidth + 4)
+    doc.setFillColor('#f8fafc')
+    doc.setDrawColor('#e2e8f0')
+    doc.roundedRect(x, 38, cardWidth, 18, 2, 2, 'FD')
+
+    doc.setFontSize(6.5)
+    doc.setTextColor(MUTED)
+    doc.setFont('helvetica', 'normal')
+    doc.text(card.label.toUpperCase(), x + 3, 44)
+
+    doc.setFontSize(10.5)
+    doc.setTextColor(INK)
+    doc.setFont('helvetica', 'bold')
+    doc.text(card.value, x + 3, 52)
+  })
+
+  let y = 62
+
+  /* --- Chart 1: platform fee composition --- */
+  doc.setFontSize(11)
+  doc.setTextColor(INK)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Komposisi Biaya Platform', 14, y)
+  doc.setFontSize(8)
+  doc.setTextColor(MUTED)
+  doc.setFont('helvetica', 'normal')
+  doc.text(
+    'Total setiap biaya yang dipotong platform dari semua order sudah cair',
+    14,
+    y + 4.5
+  )
+  y += 8
+
+  const feeItems: { label: string; value: number }[] = [
+    { label: 'Biaya Administrasi', value: sumFee(rows, (r) => r.adminFee) },
+    { label: 'Biaya Proses Pesanan', value: sumFee(rows, (r) => r.orderProcessFee) },
+    { label: 'Biaya Gratis Ongkir XTRA', value: sumFee(rows, (r) => r.freeShippingXtraFee) },
+    { label: 'Biaya Layanan Promo XTRA+', value: sumFee(rows, (r) => r.serviceFeePromoXtra) },
+    { label: 'Biaya Kampanye', value: sumFee(rows, (r) => r.campaignFee) },
+    { label: 'Biaya Isi Saldo Otomatis', value: sumFee(rows, (r) => r.autoTopupFee) },
+    { label: 'Premi', value: sumFee(rows, (r) => r.premium) },
+    { label: 'Biaya Komisi AMS', value: sumFee(rows, (r) => r.amsCommissionFee) },
+    { label: 'Biaya Transaksi', value: sumFee(rows, (r) => r.transactionFee) },
+    { label: 'FBS Fee', value: sumFee(rows, (r) => r.fbsFee) },
+    { label: 'PPh 22', value: sumFee(rows, (r) => r.pph22) },
+  ].filter((i) => i.value > 0)
+
+  if (feeItems.length > 0) {
+    y = drawBarChart(doc, 14, y, width - 28, feeItems, [99, 102, 241]) + 4
+  } else {
+    doc.setFontSize(8)
+    doc.setTextColor(MUTED)
+    doc.text('Belum ada biaya platform yang tercatat.', 14, y + 4)
+    y += 12
+  }
+
+  /* --- Chart 2: daily earnings --- */
+  const byDate = new Map<string, number>()
+  settled.forEach((r) => {
+    const d = (r.releaseDate || '').slice(0, 10) || 'Tanpa tanggal'
+    byDate.set(d, (byDate.get(d) ?? 0) + (r.totalEarnings ?? 0))
+  })
+  const dateItems = Array.from(byDate.entries())
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .slice(-12)
+
+  if (dateItems.length > 0) {
+    doc.setFontSize(11)
+    doc.setTextColor(INK)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Penghasilan per Tanggal Pelepasan Dana', 14, y)
+    doc.setFontSize(8)
+    doc.setTextColor(MUTED)
+    doc.setFont('helvetica', 'normal')
+    doc.text(
+      dateItems.length === 12
+        ? '12 tanggal pelepasan terakhir'
+        : `${dateItems.length} tanggal pelepasan`,
+      14,
+      y + 4.5
+    )
+    y = drawBarChart(doc, 14, y + 8, width - 28, dateItems, [16, 185, 129]) + 4
+  }
+
+  /* --- Per-order table (new page) --- */
+  doc.addPage()
+  pdfHeader(doc, 'Rincian Penghasilan per Order', `${rows.length} pesanan`)
+
+  autoTable(doc, {
+    head: [
+      [
+        'No. Pesanan',
+        'Status',
+        'Status Penghasilan',
+        'Tgl Dana Dilepas',
+        'Harga Produk',
+        'Total Biaya',
+        'Total Penghasilan',
+      ],
+    ],
+    body: rows.map((r) => [
+      r.orderNumber,
+      truncate(r.status, 26),
+      r.hasEarnings ? 'Sudah Cair' : 'Belum Cair',
+      (r.releaseDate || '-').slice(0, 10),
+      formatRupiah(Math.abs(r.productPrice ?? 0)),
+      formatRupiah(rowPlatformFees(r)),
+      r.hasEarnings ? formatRupiah(r.totalEarnings ?? 0) : '-',
+    ]),
+    startY: 36,
+    margin: { left: 14, right: 14 },
+    styles: { fontSize: 7, cellPadding: 2 },
+    headStyles: { fillColor: [16, 185, 129], textColor: 255, fontSize: 7 },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    columnStyles: {
+      0: { cellWidth: 30 },
+      1: { cellWidth: 40 },
+      2: { cellWidth: 26 },
+      3: { cellWidth: 26 },
+      4: { halign: 'right' as const, cellWidth: 26 },
+      5: { halign: 'right' as const, cellWidth: 24 },
+      6: { halign: 'right' as const, cellWidth: 28 },
+    },
+    didDrawPage: () => pdfFooter(doc),
+  })
+
+  pdfFooter(doc)
+  return doc.output('arraybuffer')
+}
+
+function sumFee(
+  rows: EarningsRow[],
+  selector: (r: EarningsRow) => number | null
+): number {
+  return rows.reduce((s, r) => (r.hasEarnings ? s + Math.abs(selector(r) ?? 0) : s), 0)
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                 Utilities                                    */
 /* -------------------------------------------------------------------------- */
@@ -556,5 +868,5 @@ function formatDateOnly(value: string | null | undefined): string {
 export const EXPORT_FORMATS = ['csv', 'xlsx', 'pdf'] as const
 export type ExportFormat = (typeof EXPORT_FORMATS)[number]
 
-export const EXPORT_TYPES = ['orders', 'profit', 'stats'] as const
+export const EXPORT_TYPES = ['orders', 'profit', 'stats', 'earnings'] as const
 export type ExportType = (typeof EXPORT_TYPES)[number]
