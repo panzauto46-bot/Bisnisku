@@ -71,10 +71,13 @@
 - **Tables**: TanStack Table
 
 ### Backend
-- **Runtime**: Node.js
-- **Database**: SQLite + Drizzle ORM
+- **Runtime**: Node.js (API routes) + Edge (middleware)
+- **Database**: SQLite via libSQL — file lokal di development, **Turso** di
+  production (Vercel)
+- **ORM**: Drizzle ORM
 - **Excel Parser**: xlsx
 - **API**: Next.js API Routes
+- **License**: Ed25519-signed license files + HMAC session cookies
 
 ---
 
@@ -83,14 +86,7 @@
 Pastikan sudah terinstall:
 
 - **Node.js** >= 18.17.0 ([Download](https://nodejs.org/))
-- **pnpm** >= 8.0.0 (Recommended)
-  ```bash
-  npm install -g pnpm
-  ```
-
-Atau bisa juga pakai:
-- **npm** >= 9.0.0
-- **yarn** >= 1.22.0
+- **npm** >= 9.0.0 (sudah bundled dengan Node.js)
 
 ---
 
@@ -106,20 +102,36 @@ cd Bisnisku
 ### 2. Install Dependencies
 
 ```bash
-pnpm install
+npm install
 ```
 
-### 3. Setup Database
+### 3. Setup Environment
+
+Salin `.env.example` jadi `.env.local`, lalu isi `LICENSE_SECRET`:
 
 ```bash
-pnpm db:generate
-pnpm db:migrate
+cp .env.example .env.local
+
+# Generate secret untuk menandatangani session cookie
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-### 4. Run Development Server
+Tempel hasilnya ke `LICENSE_SECRET` di `.env.local`.
+
+### 4. Setup Database
 
 ```bash
-pnpm dev
+npm run db:setup
+```
+
+Secara default ini membuat file SQLite lokal di `data/database.db`.
+Untuk production (Vercel), set `TURSO_DATABASE_URL` dan `TURSO_AUTH_TOKEN`
+lihat bagian **Deployment** di bawah.
+
+### 5. Jalankan Development Server
+
+```bash
+npm run dev
 ```
 
 Buka browser dan akses: **http://localhost:3000**
@@ -131,47 +143,80 @@ Buka browser dan akses: **http://localhost:3000**
 ### Step 1: Install Dependencies
 
 ```bash
-# Using pnpm (recommended)
-pnpm install
-
-# Or using npm
 npm install
-
-# Or using yarn
-yarn install
 ```
 
 ### Step 2: Environment Setup
 
-Buat file `.env.local` di root folder:
+Buat file `.env.local` di root folder (lihat `.env.example`):
 
 ```env
-NEXT_PUBLIC_APP_NAME=BisnisKu
-NEXT_PUBLIC_APP_VERSION=1.0.0
-DATABASE_PATH=./data/database.db
-MAX_FILE_SIZE=52428800
-MAX_ROWS_PER_IMPORT=10000
-NODE_ENV=development
+# Database (opsional di development — kosong = pakai file lokal)
+TURSO_DATABASE_URL=
+TURSO_AUTH_TOKEN=
+
+# WAJIB. Secret untuk menandatangani session cookie.
+LICENSE_SECRET=
+
+# Public key untuk verifikasi license file.
+# Di-generate otomatis saat pertama kali menjalankan `npm run license:gen`.
+LICENSE_PUBLIC_KEY=
 ```
 
 ### Step 3: Database Setup
 
 ```bash
-# Generate migrations
-pnpm db:generate
-
-# Run migrations
-pnpm db:migrate
-
-# (Optional) Seed demo data
-pnpm db:seed
+npm run db:setup
 ```
 
 ### Step 4: Start Development
 
 ```bash
-pnpm dev
+npm run dev
 ```
+
+---
+
+## 🔐 Sistem License
+
+BisnisKu adalah produk berbayar (Rp 20.000/bulan, Rp 220.000/tahun).
+Akses ke aplikasi dijaga oleh **license file** yang ditandatangani secara
+kriptografis (Ed25519), bukan key string yang bisa ditebak.
+
+### Cara kerja
+
+1. **Anda (penjual)** menjalankan generator untuk membuat license file:
+
+   ```bash
+   npm run license:gen                     # paket tahunan (default)
+   npm run license:gen -- --plan monthly   # paket bulanan
+   npm run license:gen -- --plan yearly --count 5
+   ```
+
+   atau cukup **double-click `Generator-License.bat`** di folder proyek.
+
+   Saat pertama kali dijalankan, generator membuat sepasang kunci:
+   - `data/license-private.key` — **RAHASIA**, hanya ada di komputer Anda,
+     tidak pernah di-commit dan tidak pernah dikirim ke pembeli
+   - `data/license-public.key` — public key, sudah ditanam di kode aplikasi
+
+   License file dibuat di folder `licenses/BISNISKU-<id>.dat`.
+
+2. **Pembeli** meng-upload file `.dat` itu di halaman **/login**. Aplikasi
+   memverifikasi tanda tangan dengan public key (offline, tanpa hubungan
+   ke server Anda), lalu mencatat fingerprint perangkat pembeli.
+
+3. **Satu license = satu perangkat.** File yang sama di-upload dari
+   perangkat lain akan ditolak (409). Jika pembeli ganti komputer, mereka
+   butuh license file baru.
+
+### Keamanan
+
+- Pembeli tidak bisa memalsukan license: butuh private key yang hanya ada
+  di tangan Anda.
+- Session cookie ditandatangani dengan `LICENSE_SECRET` — tanpa env var ini
+  aplikasi menolas membuat session (tidak ada default hardcoded).
+- Middleware Edge memblokir semua route aplikasi kecuali ada cookie valid.
 
 ---
 
@@ -179,19 +224,16 @@ pnpm dev
 
 | Script | Description |
 |--------|-------------|
-| `pnpm dev` | Start development server (port 3000) |
-| `pnpm build` | Build for production |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm format` | Format code with Prettier |
-| `pnpm type-check` | Check TypeScript types |
-| `pnpm db:generate` | Generate database migrations |
-| `pnpm db:migrate` | Run database migrations |
-| `pnpm db:studio` | Open Drizzle Studio (DB GUI) |
-| `pnpm db:seed` | Seed demo data |
-| `pnpm test` | Run tests |
-| `pnpm test:watch` | Run tests in watch mode |
-| `pnpm test:coverage` | Generate test coverage report |
+| `npm run dev` | Start development server (port 3000) |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format code with Prettier |
+| `npm run type-check` | Check TypeScript types |
+| `npm run db:setup` | Buat tabel database |
+| `npm run db:push` | Push schema changes via Drizzle Kit |
+| `npm run db:studio` | Open Drizzle Studio (DB GUI) |
+| `npm run license:gen` | Generate license file untuk pembeli |
 
 ---
 
@@ -307,6 +349,59 @@ Detail lengkap: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
 
 ---
 
+## ☁️ Deployment (Vercel + Turso)
+
+Aplikasi ini didesain untuk deploy di **Vercel**. Karena serverless Vercel
+tidak menyimpan file secara permanen, databasenya pakai **Turso** (SQLite
+hosted via HTTP) — bukan file SQLite lokal.
+
+### 1. Buat database Turso (gratis)
+
+1. Daftar di [turso.tech](https://turso.tech)
+2. Buat database, lalu ambil URL dan token:
+   ```bash
+   turso db create bisnisku
+   turso db tokens create bisnisku
+   ```
+3. Jalankan migrasi ke database remote:
+   ```bash
+   TURSO_DATABASE_URL=libsql://bisnisku-xxxx.turso.io \
+   TURSO_AUTH_TOKEN=xxxxx \
+   npm run db:setup
+   ```
+
+### 2. Set Environment Variables di Vercel
+
+Di **Project Settings → Environment Variables**, isi:
+
+| Variable | Nilai |
+|----------|-------|
+| `TURSO_DATABASE_URL` | `libsql://bisnisku-xxxx.turso.io` |
+| `TURSO_AUTH_TOKEN` | token dari `turso db tokens create` |
+| `LICENSE_SECRET` | hasil `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `LICENSE_PUBLIC_KEY` | public key dari `data/license-public.key` |
+
+> ⚠️ **`LICENSE_SECRET` wajib di-set.** Tanpa itu aplikasi tidak bisa
+> membuat session cookie dan semua percobaan login akan gagal.
+
+### 3. Deploy
+
+```bash
+vercel
+```
+
+Atau hubungkan repo GitHub ini ke Vercel untuk auto-deploy tiap push.
+
+### Catatan
+
+- **Generator license tetap jalan di komputer Anda** — dia hanya butuh
+  `data/license-private.key` yang ada di lokal. Deploy Vercel tidak
+  memengaruhi kemampuan generate license.
+- **Jangan pernah commit** `data/` (sudah di-gitignore) atau `.env.local`.
+- File SQLite lokal (`data/database.db`) hanya untuk development.
+
+---
+
 ## 🗺️ Roadmap
 
 ### ✅ Phase 1.0 - MVP (Week 1-3) — DONE
@@ -354,23 +449,13 @@ Detail lengkap: [ROADMAP.md](./ROADMAP.md)
 
 ## 🧪 Testing
 
-### Run Tests
+Belum ada automated test suite. Verifikasi manual:
 
 ```bash
-# Run all tests
-pnpm test
-
-# Watch mode
-pnpm test:watch
-
-# Coverage report
-pnpm test:coverage
+npm run type-check   # TypeScript
+npm run lint         # ESLint
+npm run build        # production build
 ```
-
-### Test Coverage Goals
-- Unit tests: > 80%
-- Integration tests: Critical flows
-- E2E tests: Main user journeys
 
 ---
 

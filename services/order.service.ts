@@ -418,51 +418,58 @@ export async function getOrderByNumber(
 }
 
 /**
- * Insert multiple orders (batch)
+ * Insert multiple orders in bulk.
+ *
+ * Uses a single INSERT ... ON CONFLICT DO NOTHING per chunk instead of one
+ * SELECT + INSERT per row. With Turso each query is an HTTP round trip, so
+ * the per-row loop made a 500-row import take minutes instead of seconds.
  */
 export async function insertOrders(
   rawOrders: any[]
 ): Promise<{ inserted: number; skipped: number; errors: string[] }> {
   const errors: string[] = []
-  let inserted = 0
   let skipped = 0
 
   const now = new Date().toISOString()
 
-  for (const raw of rawOrders) {
+  const rows = rawOrders
+    .map((raw) => {
+      try {
+        const orderData = rawToOrder(raw)
+        if (!orderData.orderNumber) {
+          skipped++
+          return null
+        }
+        return { ...orderData, createdAt: now, updatedAt: now }
+      } catch (error) {
+        const errMsg =
+          error instanceof Error ? error.message : String(error)
+        errors.push(`Order ${raw.orderNumber || 'unknown'}: ${errMsg}`)
+        skipped++
+        return null
+      }
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null)
+
+  const CHUNK = 100
+  let inserted = 0
+
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK)
     try {
-      const orderData = rawToOrder(raw)
-
-      // Skip if no order number
-      if (!orderData.orderNumber) {
-        skipped++
-        continue
-      }
-
-      // Check for existing
-      const existing = await db
-        .select()
-        .from(orders)
-        .where(eq(orders.orderNumber, orderData.orderNumber))
-        .limit(1)
-
-      if (existing.length > 0) {
-        skipped++
-        continue
-      }
-
-      await db.insert(orders).values({
-        ...orderData,
-        createdAt: now,
-        updatedAt: now,
-      })
-
-      inserted++
+      const result = await db
+        .insert(orders)
+        .values(chunk)
+        .onConflictDoNothing({
+          target: orders.orderNumber,
+        })
+      inserted += result.rowsAffected
+      skipped += chunk.length - result.rowsAffected
     } catch (error) {
       const errMsg =
         error instanceof Error ? error.message : String(error)
-      errors.push(`Order ${raw.orderNumber || 'unknown'}: ${errMsg}`)
-      skipped++
+      errors.push(`Chunk starting at ${chunk[0]?.orderNumber}: ${errMsg}`)
+      skipped += chunk.length
     }
   }
 
@@ -486,13 +493,10 @@ export async function resetAllData(): Promise<{
   const deletedEarnings = await db.delete(orderEarnings)
   const deletedHistory = await db.delete(importHistory)
 
-  // Reset sqlite autoincrement sequences so IDs start from 1 again
-  await sql`DELETE FROM sqlite_sequence WHERE name IN ('orders', 'products', 'order_earnings', 'import_history')`
-
   return {
-    orders: deletedOrders.changes,
-    products: deletedProducts.changes,
-    orderEarnings: deletedEarnings.changes,
-    importHistory: deletedHistory.changes,
+    orders: deletedOrders.rowsAffected,
+    products: deletedProducts.rowsAffected,
+    orderEarnings: deletedEarnings.rowsAffected,
+    importHistory: deletedHistory.rowsAffected,
   }
 }

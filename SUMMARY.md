@@ -409,7 +409,7 @@ bisnisku/
 - recharts: ^2.12.0
 - @tanstack/react-table: ^8.17.0
 - drizzle-orm: ^0.31.0
-- better-sqlite3: ^10.0.0
+- @libsql/client: ^0.14.0
 - xlsx: ^0.18.5
 - zod: ^3.23.0
 - zustand: ^4.5.0

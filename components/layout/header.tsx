@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, Store, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { LicenseBadge } from '@/components/layout/license-badge'
 import {
   LayoutDashboard,
   Package,
@@ -65,6 +66,7 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-3">
+          <LicenseBadge />
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 md:hidden">
             <Store className="h-5 w-5 text-white" />
           </div>

@@ -36,6 +36,9 @@ data/
 *.sqlite
 *.sqlite3
 
+# Generated license files (customer-specific, never commit)
+licenses/
+
 # Uploads
 uploads/
 exports/

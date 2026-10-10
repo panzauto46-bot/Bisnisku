@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { orderEarnings, orders, importHistory } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type {
   RawEarnings,
   OrderEarnings,
@@ -13,7 +13,8 @@ import type {
  *
  * The settlement file is a separate export from the order file, so rows are
  * upserted by order number: importing a newer settlement file refreshes the
- * numbers without creating duplicates.
+ * numbers without creating duplicates. Done in bulk chunks — with Turso each
+ * query is an HTTP round trip, so a per-row loop would be far too slow.
  */
 export async function insertEarnings(
   rawRows: RawEarnings[],
@@ -27,69 +28,108 @@ export async function insertEarnings(
 
   const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
 
-  for (const raw of rawRows) {
+  const rows = rawRows
+    .filter((raw) => raw.orderNumber)
+    .map((raw) => ({
+      orderNumber: raw.orderNumber,
+      releaseDate: raw.releaseDate,
+      releaseMethod: raw.releaseMethod,
+      orderCreatedDate: raw.orderCreatedDate,
+      totalEarnings: raw.totalEarnings,
+      productPrice: raw.productPrice,
+      refundToBuyer: raw.refundToBuyer,
+      shippingPaidByBuyer: raw.shippingPaidByBuyer,
+      shippingPaidToCourier: raw.shippingPaidToCourier,
+      shippingDiscountFromCourier: raw.shippingDiscountFromCourier,
+      freeShippingFromPlatform: raw.freeShippingFromPlatform,
+      returnShippingFee: raw.returnShippingFee,
+      returnToSellerFee: raw.returnToSellerFee,
+      shippingCostRefund: raw.shippingCostRefund,
+      sellerSponsoredVoucher: raw.sellerSponsoredVoucher,
+      sellerSponsoredCoinCashback: raw.sellerSponsoredCoinCashback,
+      platformProductDiscount: raw.platformProductDiscount,
+      coFundVoucher: raw.coFundVoucher,
+      coFundCoinCashback: raw.coFundCoinCashback,
+      adminFee: raw.adminFee,
+      orderProcessFee: raw.orderProcessFee,
+      freeShippingXtraFee: raw.freeShippingXtraFee,
+      transactionFee: raw.transactionFee,
+      serviceFeePromoXtra: raw.serviceFeePromoXtra,
+      campaignFee: raw.campaignFee,
+      amsCommissionFee: raw.amsCommissionFee,
+      autoTopupFee: raw.autoTopupFee,
+      premium: raw.premium,
+      fbsFee: raw.fbsFee,
+      pph22: raw.pph22,
+      buyerUsername: raw.buyerUsername,
+      buyerPaidAmount: raw.buyerPaidAmount,
+      buyerPaymentMethod: raw.buyerPaymentMethod,
+      courier: raw.courier,
+      courierName: raw.courierName,
+      voucherCode: raw.voucherCode,
+      createdAt: now,
+      updatedAt: now,
+    }))
+
+  const CHUNK = 100
+
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK)
     try {
-      const row = {
-        orderNumber: raw.orderNumber,
-        releaseDate: raw.releaseDate,
-        releaseMethod: raw.releaseMethod,
-        orderCreatedDate: raw.orderCreatedDate,
-        totalEarnings: raw.totalEarnings,
-        productPrice: raw.productPrice,
-        refundToBuyer: raw.refundToBuyer,
-        shippingPaidByBuyer: raw.shippingPaidByBuyer,
-        shippingPaidToCourier: raw.shippingPaidToCourier,
-        shippingDiscountFromCourier: raw.shippingDiscountFromCourier,
-        freeShippingFromPlatform: raw.freeShippingFromPlatform,
-        returnShippingFee: raw.returnShippingFee,
-        returnToSellerFee: raw.returnToSellerFee,
-        shippingCostRefund: raw.shippingCostRefund,
-        sellerSponsoredVoucher: raw.sellerSponsoredVoucher,
-        sellerSponsoredCoinCashback: raw.sellerSponsoredCoinCashback,
-        platformProductDiscount: raw.platformProductDiscount,
-        coFundVoucher: raw.coFundVoucher,
-        coFundCoinCashback: raw.coFundCoinCashback,
-        adminFee: raw.adminFee,
-        orderProcessFee: raw.orderProcessFee,
-        freeShippingXtraFee: raw.freeShippingXtraFee,
-        transactionFee: raw.transactionFee,
-        serviceFeePromoXtra: raw.serviceFeePromoXtra,
-        campaignFee: raw.campaignFee,
-        amsCommissionFee: raw.amsCommissionFee,
-        autoTopupFee: raw.autoTopupFee,
-        premium: raw.premium,
-        fbsFee: raw.fbsFee,
-        pph22: raw.pph22,
-        buyerUsername: raw.buyerUsername,
-        buyerPaidAmount: raw.buyerPaidAmount,
-        buyerPaymentMethod: raw.buyerPaymentMethod,
-        courier: raw.courier,
-        courierName: raw.courierName,
-        voucherCode: raw.voucherCode,
-        createdAt: now,
-        updatedAt: now,
-      }
+      const result = await db
+        .insert(orderEarnings)
+        .values(chunk)
+        .onConflictDoUpdate({
+          target: orderEarnings.orderNumber,
+          set: {
+            releaseDate: sql`excluded.release_date`,
+            releaseMethod: sql`excluded.release_method`,
+            orderCreatedDate: sql`excluded.order_created_date`,
+            totalEarnings: sql`excluded.total_earnings`,
+            productPrice: sql`excluded.product_price`,
+            refundToBuyer: sql`excluded.refund_to_buyer`,
+            shippingPaidByBuyer: sql`excluded.shipping_paid_by_buyer`,
+            shippingPaidToCourier: sql`excluded.shipping_paid_to_courier`,
+            shippingDiscountFromCourier: sql`excluded.shipping_discount_from_courier`,
+            freeShippingFromPlatform: sql`excluded.free_shipping_from_platform`,
+            returnShippingFee: sql`excluded.return_shipping_fee`,
+            returnToSellerFee: sql`excluded.return_to_seller_fee`,
+            shippingCostRefund: sql`excluded.shipping_cost_refund`,
+            sellerSponsoredVoucher: sql`excluded.seller_sponsored_voucher`,
+            sellerSponsoredCoinCashback: sql`excluded.seller_sponsored_coin_cashback`,
+            platformProductDiscount: sql`excluded.platform_product_discount`,
+            coFundVoucher: sql`excluded.co_fund_voucher`,
+            coFundCoinCashback: sql`excluded.co_fund_coin_cashback`,
+            adminFee: sql`excluded.admin_fee`,
+            orderProcessFee: sql`excluded.order_process_fee`,
+            freeShippingXtraFee: sql`excluded.free_shipping_xtra_fee`,
+            transactionFee: sql`excluded.transaction_fee`,
+            serviceFeePromoXtra: sql`excluded.service_fee_promo_xtra`,
+            campaignFee: sql`excluded.campaign_fee`,
+            amsCommissionFee: sql`excluded.ams_commission_fee`,
+            autoTopupFee: sql`excluded.auto_topup_fee`,
+            premium: sql`excluded.premium`,
+            fbsFee: sql`excluded.fbs_fee`,
+            pph22: sql`excluded.pph22`,
+            buyerUsername: sql`excluded.buyer_username`,
+            buyerPaidAmount: sql`excluded.buyer_paid_amount`,
+            buyerPaymentMethod: sql`excluded.buyer_payment_method`,
+            courier: sql`excluded.courier`,
+            courierName: sql`excluded.courier_name`,
+            voucherCode: sql`excluded.voucher_code`,
+            updatedAt: now,
+          },
+        })
 
-      const existing = await db
-        .select({ id: orderEarnings.id })
-        .from(orderEarnings)
-        .where(eq(orderEarnings.orderNumber, raw.orderNumber))
-        .limit(1)
-
-      if (existing.length > 0) {
-        await db
-          .update(orderEarnings)
-          .set({ ...row, createdAt: undefined as never, updatedAt: now })
-          .where(eq(orderEarnings.id, existing[0].id))
-        updated++
-      } else {
-        await db.insert(orderEarnings).values(row)
-        inserted++
+      // With libSQL, rowsAffected counts each row actually modified.
+      updated += result.rowsAffected
+      if (result.rowsAffected < chunk.length) {
+        inserted += chunk.length - result.rowsAffected
       }
     } catch (error) {
-      skipped++
+      skipped += chunk.length
       errors.push(
-        `${raw.orderNumber}: ${error instanceof Error ? error.message : String(error)}`
+        `Chunk starting at ${chunk[0]?.orderNumber}: ${error instanceof Error ? error.message : String(error)}`
       )
     }
   }

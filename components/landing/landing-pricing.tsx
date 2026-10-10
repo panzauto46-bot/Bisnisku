@@ -3,8 +3,13 @@
 import { motion } from 'framer-motion'
 import { Check, Sparkles, Zap } from 'lucide-react'
 
-// TODO: ganti dengan nomor WhatsApp Anda saat siap menerima pembayaran.
-const WA_LINK = 'https://wa.me/'
+// Nomor WhatsApp untuk pembelian key (format internasional tanpa +).
+const WA_NUMBER = '6288987195278'
+
+function waLink(planName: string): string {
+  const message = `Halo, saya ingin membeli license BisnisKu paket ${planName}. Terima kasih.`
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`
+}
 
 const PERKS = [
   'Import file Excel pesanan & penghasilan tanpa batas',
@@ -125,7 +130,7 @@ export function LandingPricing() {
               )}
 
               <a
-                href={WA_LINK}
+                href={waLink(plan.name)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold transition-all ${

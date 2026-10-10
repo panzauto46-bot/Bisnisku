@@ -12,14 +12,16 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "type-check": "tsc --noEmit",
     "db:setup": "tsx scripts/setup-db.ts",
-    "db:generate": "drizzle-kit generate:sqlite",
-    "db:push": "drizzle-kit push:sqlite",
+    "license:gen": "tsx scripts/generate-license.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.6.0",
+    "@libsql/client": "^0.18.0",
     "@tanstack/react-table": "^8.17.0",
-    "better-sqlite3": "^11.3.0",
+    "@libsql/client": "^0.14.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
@@ -40,7 +42,6 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -457,15 +457,15 @@ Use **shadcn/ui** + **Tailwind CSS** for:
 - **Date Handling**: date-fns
 
 #### Backend
-- **Runtime**: Node.js (built-in with Next.js)
+- **Runtime**: Node.js (API routes) + Edge Runtime (middleware)
 - **API**: Next.js API Routes
-- **Database**: SQLite with better-sqlite3
+- **Database**: SQLite via libSQL — file lokal (development) atau Turso (production/Vercel)
 - **ORM**: Drizzle ORM
-- **File Upload**: Formidable / Multer
 - **Excel Parsing**: xlsx / exceljs
+- **License**: Ed25519-signed license files + HMAC session cookies
 
 #### Development Tools
-- **Package Manager**: pnpm
+- **Package Manager**: npm
 - **Linting**: ESLint + Prettier
 - **Type Checking**: TypeScript strict mode
 - **Git Hooks**: Husky + lint-staged

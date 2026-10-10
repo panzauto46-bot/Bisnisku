@@ -137,3 +137,22 @@ export const importHistory = sqliteTable('import_history', {
   importedAt: text('imported_at').notNull(),
   status: text('status').notNull().default('success'),
 })
+
+/**
+ * License activations table.
+ *
+ * A license file (license.dat) is verified cryptographically, but the
+ * one-license-one-device rule needs a database record: the first time a
+ * license id is activated we store the activating device's fingerprint, and
+ * any later activation attempt from a different device is refused.
+ */
+export const licenseActivations = sqliteTable('license_activations', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  // The license id from the signed license file, e.g. "8RL8M6-9H7WW8-5K6MAR"
+  licenseId: text('license_id').notNull().unique(),
+  plan: text('plan').notNull(), // 'monthly' | 'yearly'
+  // SHA-256 hash of browser/device signals. Anonymous but stable per device.
+  deviceId: text('device_id').notNull(),
+  activatedAt: text('activated_at').notNull(),
+  expiresAt: text('expires_at').notNull(),
+})

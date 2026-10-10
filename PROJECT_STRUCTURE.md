@@ -104,9 +104,14 @@ BisnisKu/
 │       ├── 📄 button.tsx
 │       └── 📄 card.tsx
 │
+├── 📁 lib/                           # License logic
+│   ├── 📄 license.ts                 # Session cookie sign/verify (Web Crypto, Edge-safe)
+│   ├── 📄 license-file.ts            # Ed25519 license file verification (nodejs)
+│   └── 📄 license-client.ts          # Browser device fingerprint
+│
 ├── 📁 db/                            # Database layer
-│   ├── 📄 index.ts                   # better-sqlite3 + Drizzle singleton
-│   └── 📄 schema.ts                  # orders, products, order_earnings, import_history
+│   ├── 📄 index.ts                   # libSQL/Turso + Drizzle singleton
+│   └── 📄 schema.ts                  # orders, products, order_earnings, import_history, license_activations
 │
 ├── 📁 services/                      # Business logic
 │   ├── 📄 excel-parser.service.ts    # Order Excel adapter (headers → RawOrder)
@@ -125,16 +130,22 @@ BisnisKu/
 │   └── 📄 earnings.types.ts          # RawEarnings, OrderEarnings, EarningsStats
 │
 ├── 📁 scripts/                       # CLI utilities
-│   ├── 📄 setup-db.ts                # Initialize database
+│   ├── 📄 setup-db.ts                # Initialize database (local file or Turso)
+│   ├── 📄 generate-license.ts        # License generator (seller tool)
 │   ├── 📄 import-excel.ts            # Import Excel export
 │   ├── 📄 verify-data.ts             # Verify imported data
 │   ├── 📄 check-statuses.ts          # Inspect raw status strings
 │   └── 📄 check-category.ts          # Inspect status categories
 │
+├── 📄 Generator-License.bat          # Double-click launcher for license generator
+├── 📄 middleware.ts                  # Edge middleware: route guard by cookie
+│
 ├── 📁 public/                        # Static assets
 │
 └── 📁 data/                          # Local storage (gitignored)
-    └── 📄 database.db                # SQLite database
+    ├── 📄 database.db                # SQLite database (development only)
+    ├── 📄 license-private.key        # Ed25519 private key (RAHASIA, seller only)
+    └── 📄 license-public.key         # Ed25519 public key (ditanam di app)
 ```
 
 ---
@@ -150,14 +161,11 @@ BisnisKu/
     "lint": "next lint",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "type-check": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate:sqlite",
-    "db:push": "drizzle-kit push:sqlite",
-    "db:studio": "drizzle-kit studio",
-    "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed": "tsx scripts/seed-demo.ts",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "db:setup": "tsx scripts/setup-db.ts",
+    "license:gen": "tsx scripts/generate-license.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   }
 }
 ```
@@ -175,31 +183,31 @@ BisnisKu/
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "typescript": "^5.5.0",
-    
+
     "@radix-ui/react-*": "*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    
+
     "framer-motion": "^11.2.0",
-    
+
     "recharts": "^2.12.0",
-    
+
     "@tanstack/react-table": "^8.17.0",
-    
-    "better-sqlite3": "^10.0.0",
+
+    "@libsql/client": "^0.14.0",
     "drizzle-orm": "^0.31.0",
-    
+
     "xlsx": "^0.18.5",
     "exceljs": "^4.4.0",
-    
+
     "react-hook-form": "^7.51.0",
     "zod": "^3.23.0",
     "@hookform/resolvers": "^3.6.0",
-    
+
     "zustand": "^4.5.0",
-    
+
     "date-fns": "^3.6.0",
     "react-day-picker": "^8.10.0",
     
@@ -217,12 +225,10 @@ BisnisKu/
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@types/better-sqlite3": "^7.6.10",
-    
     "tailwindcss": "^3.4.0",
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
-    
+
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
     "eslint-config-prettier": "^9.1.0",
