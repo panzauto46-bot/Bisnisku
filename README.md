@@ -31,6 +31,9 @@
 - 💚 **Badge Sudah Cair / Belum Cair** - Tabel pesanan menandai order mana
   yang dananya sudah dilepas platform (rincian lengkap) vs yang belum —
   dibaca murni dari hasil import Excel Anda, tanpa koneksi API marketplace
+- 🏠 **Landing Page Profesional** - Halaman publik di route `/` dengan
+  animasi: hero, fitur, cara kerja, pricing (Rp 20.000/bulan,
+  Rp 220.000/tahun), FAQ, dan CTA pembelian
 - 📥 **Multi-Format Export** - Download data sebagai CSV, Excel (.xlsx), atau PDF
   untuk 4 jenis data: **Pesanan**, **Profit**, **Statistik**, dan
   **Penghasilan Platform** (12 opsi total). PDF Penghasilan profesional

@@ -15,7 +15,7 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ### 🐙 Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
+- **Latest Commit**: `6728509` - feat: landing page profesional + restrukturisasi route groups
 - **Files**: 80+ files, 22.000+ baris kode
 
 ### Verifikasi Data (Oct 7, 2026)
@@ -50,6 +50,18 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ---
 
 ## ✨ Update Terbaru (Oct 7-10, 2026)
+
+### Landing Page Profesional (Oct 10) — commit `6728509`
+- Landing page publik di route `/` (full animasi Framer Motion):
+  hero dengan animated mockup, 6 features, cara kerja 3 langkah,
+  pricing 2 kartu, FAQ accordion, CTA + footer
+- Aplikasi dipindah ke route group `(app)`, landing page di
+  `(marketing)` — sidebar tidak bocor ke landing page
+- Harga: Rp 20.000/bulan & Rp 220.000/tahun; paket tahunan
+  "Hemat Rp 20.000 — bayar 11 bulan, dapat 12 bulan"
+- Link Dashboard `/` → `/dashboard` (sidebar, header, upload zone)
+- Selanjutnya (Fase 2): halaman login key + middleware proteksi +
+  sistem generate key di DB lokal
 
 ### Export Penghasilan Platform (Oct 10) — commit `0e3797e`
 - Tipe export baru **"Penghasilan"** → menu Export Data sekarang 12 opsi
@@ -455,5 +467,5 @@ npm run dev
 
 **Last Updated**: October 10, 2026  
 **Status**: 🟢 Working with real data  
-**Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF
+**Latest Commit**: `6728509` - feat: landing page profesional + restrukturisasi route groups
 **Next Update**: Setelah PR-A (filter periode)

@@ -5,7 +5,7 @@
 **Status**: 🟢 WORKING WITH REAL DATA — MVP complete, export, penghasilan & badge done  
 **Estimated Timeline**: 7 weeks (49 days)  
 **Repo**: https://github.com/panzauto46-bot/Bisnisku  
-**Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF
+**Latest Commit**: `6728509` - feat: landing page profesional + restrukturisasi route groups
 
 ---
 

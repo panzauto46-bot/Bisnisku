@@ -327,7 +327,7 @@ Phase 1.2 (Profit)       : █████████████████�
 ### GitHub Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF
+- **Latest Commit**: `6728509` - feat: landing page profesional + restrukturisasi route groups
 
 ---
 

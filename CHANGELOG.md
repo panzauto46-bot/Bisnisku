@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Landing Page Profesional + Restrukturisasi Route - October 10, 2026
+
+#### Added — Landing page publik
+Persiapan model berbayar: halaman publik di route `/` yang menjelaskan
+produk, harga, dan CTA pembelian key.
+
+- 🆕 `app/(marketing)/page.tsx` — landing page tanpa sidebar aplikasi
+- 🆕 7 komponen di `components/landing/`:
+  - `landing-navbar.tsx` — sticky navbar blur, mobile menu slide-in
+  - `landing-hero.tsx` — gradient blobs animasi loop, headline gradient
+    text, mockup dashboard dengan animated bar chart + floating cards
+  - `landing-features.tsx` — 6 kartu fitur, hover lift, stagger reveal
+  - `landing-steps.tsx` — cara kerja 3 langkah dengan garis penghubung
+  - `landing-pricing.tsx` — 2 kartu harga (Rp 20.000/bulan,
+    Rp 220.000/tahun)
+  - `landing-faq.tsx` — accordion 6 pertanyaan
+  - `landing-cta.tsx` — CTA section gradient + footer
+- 🆕 Copy paket tahunan: *"Hemat Rp 20.000 — bayar 11 bulan, dapat 12
+  bulan"*, setara Rp 18.333/bulan, badge "Paling Populer"
+- 🆕 `WA_LINK` placeholder untuk CTA pembelian manual via WhatsApp
+
+#### Changed — Route groups
+Aplikasi dipindah ke route group `(app)` agar landing page tidak
+membawa sidebar aplikasi:
+
+- `app/(marketing)/page.tsx` → landing page (route `/`)
+- `app/(app)/` → dashboard, orders, pending, shipped, completed,
+  cancelled, profit, import
+- `app/(app)/layout.tsx` → wrapper Sidebar + Header
+- `app/layout.tsx` → root layout minimal (html/body/Toaster)
+- 🔄 Link Dashboard `/` → `/dashboard` (sidebar, header mobile,
+  file-upload-zone empty state)
+
+#### Verified
+- Landing page 200 OK: hero, 6 features, pricing, 6 FAQ, CTA, footer
+- `/dashboard` dan `/orders` 200 OK, sidebar muncul, landing hero
+  tidak bocor
+- `tsc --noEmit` exit 0 (setelah hapus cache `.next` yang stale)
+
+---
+
 ### Export Data Penghasilan Platform - October 10, 2026
 
 #### Added — Tipe export ke-4
@@ -570,4 +611,5 @@ Removed all marketplace brand references to avoid trademark/copyright issues:
 ---
 
 **Last Updated**: October 10, 2026  
+**Latest Commit**: `6728509` — feat: landing page profesional + restrukturisasi route groups
 **Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF
