@@ -286,7 +286,7 @@ export function FileUploadZone({
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <a href="/">
+                    <a href="/dashboard">
                       <Button size="sm">Ke Dashboard</Button>
                     </a>
                     <a href="/orders">

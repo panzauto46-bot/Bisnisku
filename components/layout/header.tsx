@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { title: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Semua Pesanan', href: '/orders', icon: Package },
   { title: 'Perlu Dikirim', href: '/pending', icon: Clock },
   { title: 'Dikirim', href: '/shipped', icon: Truck },
@@ -33,7 +33,9 @@ export function Header() {
 
   const currentPage =
     navItems.find((item) =>
-      item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+      item.href === '/dashboard'
+        ? pathname === '/dashboard'
+        : pathname.startsWith(item.href)
     )?.title || 'Dashboard'
 
   return (
@@ -105,8 +107,8 @@ export function Header() {
               <nav className="flex-1 space-y-1 overflow-y-auto p-3">
                 {navItems.map((item) => {
                   const isActive =
-                    item.href === '/'
-                      ? pathname === '/'
+                    item.href === '/dashboard'
+                      ? pathname === '/dashboard'
                       : pathname.startsWith(item.href)
 
                   return (

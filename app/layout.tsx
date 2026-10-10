@@ -2,14 +2,13 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
-import { Sidebar } from '@/components/layout/sidebar'
-import { Header } from '@/components/layout/header'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'BisnisKu - Dashboard',
-  description: 'Professional Dashboard for Marketplace Order Management & Analytics',
+  title: 'BisnisKu - Dashboard Pesanan Marketplace',
+  description:
+    'Kelola dan analisis pesanan marketplace Anda dari file Excel. Import otomatis, laporan penghasilan, dan analisis profit dalam satu aplikasi.',
 }
 
 export default function RootLayout({
@@ -20,15 +19,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={inter.className}>
-        <div className="flex h-screen bg-slate-50">
-          <Sidebar />
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-y-auto p-6">
-              {children}
-            </main>
-          </div>
-        </div>
+        {children}
         <Toaster position="top-right" richColors />
       </body>
     </html>
