@@ -1,8 +1,8 @@
 # 📊 BisnisKu - Development Progress Tracker
 
-**Last Updated**: October 8, 2026  
+**Last Updated**: October 10, 2026  
 **Current Phase**: Phase 1.0 COMPLETE — Enhancement & Profit hampir selesai  
-**Overall Progress**: 96%
+**Overall Progress**: 97%
 
 ---
 
@@ -15,7 +15,7 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 ### 🐙 Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
+- **Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
 - **Files**: 80+ files, 22.000+ baris kode
 
 ### Verifikasi Data (Oct 7, 2026)
@@ -49,9 +49,34 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 
 ---
 
-## ✨ Update Terbaru (Oct 7-8, 2026)
+## ✨ Update Terbaru (Oct 7-10, 2026)
 
-### Import File Penghasilan (Oct 8) — commit menyusul
+### Badge "Sudah Cair / Belum Cair" (Oct 10) — commit `5b7d2f0`
+- Kolom **Penghasilan** di tabel pesanan: ✓ Sudah Cair / ⏳ Belum Cair /
+  ✕ Tidak Ada. Murni baca `order_earnings` (hasil import Excel), tanpa API
+- Berguna membedakan order yang wajar belum punya rincian biaya vs yang
+  seharusnya sudah ada (file penghasilan perlu di-download ulang)
+
+### Rincian Penghasilan Gaya Marketplace (Oct 9-10) — commits `6f09175`..`4793684`
+- Detail modal: section "Harga & Diskon" + "Penghasilan & Biaya Platform"
+  digabung jadi satu flow **"Rincian Penghasilan"** seperti Seller Center
+- Urutan: Subtotal Pesanan → Voucher & Subsidi → Total Pembayaran →
+  Biaya Platform / Gratis Ongkir XTRA / Layanan / Promosi / Lainnya /
+  Pajak → Estimasi Total Penghasilan
+- Fix: Subtotal Pesanan sempat salah menjumlahkan Harga Sebelum Diskon
+  (Rp 158.400 → seharusnya Rp 68.400)
+- Section "Cek Silang" dihapus seluruhnya (validasi teknis, tidak bernilai
+  bisnis)
+
+### Insight Cara Kerja File Penghasilan (Oct 10)
+- File penghasilan di-filter per **bulan pelepasan dana**, bukan bulan
+  order. Order Mei yang selesai Juni → dananya lepas Juni → ada di file
+  penghasilan Juni, bukan Mei
+- Diverifikasi dengan data test periode Mei: 523 order, 412 data
+  penghasilan (parser 0 gagal — 412 unik di file = 412 di DB). 77 order
+  Selesai tanpa penghasilan karena selesainya Juni (dananya lepas Juni)
+
+### Import File Penghasilan (Oct 8) — commits `c1c62fc`..`4161b05`
 - Tabel `order_earnings` + parser sheet "Penghasilan" (36 kolom, skip baris SKU)
 - Panel **Penghasilan Bersih Platform** di dashboard + section di order detail
 - Dua area upload di halaman Import, match otomatis by nomor pesanan
@@ -422,7 +447,7 @@ npm run dev
 
 ---
 
-**Last Updated**: October 8, 2026  
+**Last Updated**: October 10, 2026  
 **Status**: 🟢 Working with real data  
-**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
+**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
 **Next Update**: Setelah PR-A (filter periode)

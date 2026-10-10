@@ -1,11 +1,11 @@
 # 📋 BisnisKu - Project Summary
 
 **Created**: October 7, 2026  
-**Last Updated**: October 8, 2026  
-**Status**: 🟢 WORKING WITH REAL DATA — MVP complete, export & penghasilan done  
+**Last Updated**: October 10, 2026  
+**Status**: 🟢 WORKING WITH REAL DATA — MVP complete, export, penghasilan & badge done  
 **Estimated Timeline**: 7 weeks (49 days)  
 **Repo**: https://github.com/panzauto46-bot/Bisnisku  
-**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
+**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
 
 ---
 

@@ -1,9 +1,9 @@
 # 🎯 BisnisKu - Current Status
 
-**Last Updated**: October 8, 2026  
+**Last Updated**: October 10, 2026  
 **Phase**: Phase 1.0 COMPLETE  
 **Status**: 🟢 WORKING WITH REAL DATA + PUSHED TO GITHUB  
-**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
+**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
 
 ---
 
@@ -19,12 +19,14 @@
 │  ✅ EXPORT CSV / EXCEL / PDF SUDAH JALAN                    │
 │  ✅ RESET DATA SUDAH JALAN                                  │
 │  ✅ IMPORT FILE PENGHASILAN + RINCIAN BIAYA PLATFORM        │
+│  ✅ RINCIAN PENGHASILAN GAYA MARKETPLACE DI DETAIL PESANAN  │
+│  ✅ BADGE SUDAH CAIR / BELUM CAIR DI TABEL PESANAN          │
 │  ✅ SUDAH PUSH KE GITHUB                                    │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Progress**: 96% — lihat detail per phase di bawah.
+**Progress**: 97% — lihat detail per phase di bawah.
 
 **Server**: http://localhost:3001  
 **Repo**: https://github.com/panzauto46-bot/Bisnisku
@@ -37,7 +39,7 @@
 |------|-------|
 | URL | https://github.com/panzauto46-bot/Bisnisku |
 | Branch | `master` |
-| Latest Commit | `c1c62fc` — feat: import file penghasilan + rincian biaya platform |
+| Latest Commit | `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan |
 | Files | 80+ files |
 | Lines | 22.000+ baris kode |
 
@@ -55,6 +57,13 @@
   konfirmasi
 - ✅ Data 100% asli dari Excel user (dinamis, sesuai import terakhir)
 
+> 💡 **Penting soal file penghasilan**: file ini di-filter per **bulan
+> pelepasan dana**, bukan bulan order dibuat. Dana baru dilepas setelah
+> order selesai + masa retur (~7 hari). Jadi order Mei yang selesainya
+> Juni tertulis di file penghasilan **Juni**, bukan file Mei. Untuk
+> coverage penuh, download beberapa bulan berturut-turut — import ulang
+> tidak menghapus data lama (upsert per nomor pesanan).
+
 ### Dashboard
 - ✅ 5 metric cards + 4 revenue cards
 - ✅ 4 charts (revenue trend, status, top products, payment methods)
@@ -69,9 +78,16 @@
 - ✅ Semua / Perlu Dikirim / Dikirim / Selesai / Dibatalkan
 - ✅ Search (no pesanan, produk, pembeli, resi) + pagination
 - ✅ Detail modal 49 fields + copy-to-clipboard
-- ✅ Section **Penghasilan & Biaya Platform** di detail modal untuk order
-  yang ada datanya
 - ✅ Kolom Alasan Pembatalan di halaman Dibatalkan (full text, tidak truncate)
+- ✅ **Kolom "Penghasilan"** di tabel pesanan — badge:
+  ✓ Sudah Cair (ada di file penghasilan) / ⏳ Belum Cair (dana belum
+  dilepas) / ✕ Tidak Ada (dibatalkan). Dibaca dari hasil import Excel,
+  tanpa koneksi API marketplace
+- ✅ **Rincian Penghasilan gaya marketplace** di detail modal — satu flow
+  perhitungan dari Subtotal Pesanan → Voucher & Subsidi → kelompok biaya
+  (Platform, Gratis Ongkir XTRA, Layanan, Promosi, Lainnya, Pajak) →
+  Estimasi Total Penghasilan. Menggabungkan data file pesanan + file
+  penghasilan; baris Rp 0 disembunyikan; subtotal per kelompok otomatis
 
 ### Profit
 - ✅ Input harga modal per produk
@@ -105,10 +121,10 @@ Lihat detail lengkap di `CHANGELOG.md` bagian **Backlog — Prioritas PR Berikut
 | Phase | Progress | Status |
 |-------|----------|--------|
 | Phase 1.0 - MVP | 98% | ✅ Complete |
-| Phase 1.1 - Enhancement | 96% | 🟢 Export + penghasilan selesai, tinggal filter periode |
+| Phase 1.1 - Enhancement | 97% | 🟢 Export, penghasilan, badge selesai, tinggal filter periode |
 | Phase 1.2 - Profit | 85% | 🟡 Engine siap, modal belum diisi |
 
-**Total Progress**: ~96%
+**Total Progress**: ~97%
 
 ---
 
@@ -119,8 +135,6 @@ Lihat detail lengkap di `CHANGELOG.md` bagian **Backlog — Prioritas PR Berikut
 3. **Counter animation** → Shows 0 for ~1 second then actual value (by design)
 4. **`next build` + `next dev` barengan** → cache `.next` korup → dashboard
    kosong. Fix: kill node, hapus `.next`, restart dev server.
-5. **`/api/stats` bisa ter-cache** → route belum `force-dynamic`; jika angka
-   terlihat stale, reload halaman
 
 ---
 

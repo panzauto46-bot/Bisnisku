@@ -327,7 +327,7 @@ Phase 1.2 (Profit)       : █████████████████�
 ### GitHub Repository
 - **URL**: https://github.com/panzauto46-bot/Bisnisku
 - **Branch**: `master`
-- **Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
+- **Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
 
 ---
 
@@ -396,6 +396,6 @@ Detail lengkap ada di `CHANGELOG.md` bagian **Backlog — Prioritas PR Berikutny
 
 ---
 
-**Last Updated**: October 8, 2026  
+**Last Updated**: October 10, 2026  
 **Status**: Phase 1.0 Complete — Export done — Backlog PR-A..H disusun  
 **Next**: PR-A Filter Periode

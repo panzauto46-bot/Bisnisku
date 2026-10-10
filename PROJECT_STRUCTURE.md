@@ -93,9 +93,9 @@ BisnisKu/
 │   │   ├── 📄 header.tsx
 │   │   └── 📄 sidebar.tsx
 │   ├── 📁 orders/                    # Order UI
-│   │   ├── 📄 orders-table.tsx       # Table + pagination + search
+│   │   ├── 📄 orders-table.tsx       # Table + pagination + search + badge penghasilan
 │   │   ├── 📄 order-detail-modal.tsx # 49-field detail modal
-│   │   └── 📄 order-earnings-section.tsx # Penghasilan per order
+│   │   └── 📄 earnings-detail-section.tsx # Rincian Penghasilan gaya marketplace
 │   ├── 📁 shared/                    # Shared building blocks
 │   │   ├── 📄 animated-counter.tsx
 │   │   ├── 📄 status-badge.tsx
@@ -583,5 +583,5 @@ test: add unit tests for calculations
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: October 7, 2026
+**Document Version**: 1.0.1  
+**Last Updated**: October 10, 2026

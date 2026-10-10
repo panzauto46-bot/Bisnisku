@@ -7,6 +7,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Badge "Sudah Cair / Belum Cair" di Tabel Pesanan - October 10, 2026
+
+#### Added — Transparansi status penghasilan per order
+- 🆕 Kolom **Penghasilan** di tabel halaman pesanan dengan 3 state badge:
+  - **✓ Sudah Cair** (hijau) — order ada di file penghasilan yang di-import;
+    rincian biaya platform-nya lengkap
+  - **⏳ Belum Cair** (amber) — dana belum dilepas platform; wajar jika
+    rincian biaya belum muncul
+  - **✕ Tidak Ada** (abu) — order dibatalkan, tidak akan pernah ada
+    penghasilan
+- 🆕 Field `hasEarnings` di `OrderWithCategory` (`types/order.types.ts`)
+- 🆕 `getOrders()` di `order.service.ts` sekarang join ke `order_earnings`
+  (dengan `inArray`) dan set flag per order — murni membaca hasil import
+  Excel, **tanpa koneksi API ke marketplace**
+
+#### Why
+Setelah import, sebagian order terlihat "tidak ada rincian biaya platform"
+dan sulit dibedakan mana yang error vs mana yang memang dananya belum
+cair. Badge ini memunculkan perbedaannya secara visual. Order berstatus
+Selesai tapi badge-nya "Belum Cair" = file penghasilan perlu di-download
+ulang (rentang bulan berikutnya).
+
+#### Verified
+- Data periode Mei (523 order, 412 data penghasilan): badge muncul benar
+  untuk ketiga state
+- Type-check clean (`tsc --noEmit` exit 0)
+
+---
+
+### Rincian Penghasilan Gaya Marketplace di Detail Pesanan - October 9-10, 2026
+
+#### Changed — Satu flow perhitungan seperti Seller Center
+Detail pesanan sebelumnya punya dua section terpisah: **"Harga & Diskon"**
+(dari file pesanan) dan **"Penghasilan & Biaya Platform"** (dari file
+penghasilan). Keduanya sekarang digabung menjadi satu section
+**"Rincian Penghasilan"** yang disusun mengikuti settlement report Seller
+Center — dari Subtotal Pesanan turun ke bawah lewat setiap kelompok biaya
+sampai Estimasi Total Penghasilan.
+
+- 🆕 `components/orders/earnings-detail-section.tsx` — menggantikan
+  `order-earnings-section.tsx`
+- Struktur: **Subtotal Pesanan** (Harga Sebelum Diskon sebagai info, Harga
+  Produk, ongkir) → **Voucher & Subsidi** (diskon penjual/platform,
+  voucher, koin, cashback, CC) → **Total Pembayaran** → kelompok biaya
+  (**Biaya Platform**, **Gratis Ongkir XTRA**, **Biaya Layanan**,
+  **Biaya Promosi**, **Biaya Lainnya**, **Pajak**) → **Estimasi Total
+  Penghasilan** (menonjol, hijau)
+- Setiap kelompok punya baris subtotal yang dihitung otomatis; baris
+  bernilai Rp 0 disembunyikan — sama seperti Seller Center
+- Prioritas sumber data: field yang ada di file penghasilan diambil dari
+  sana (angka real settlement); field yang hanya ada di file pesanan
+  (diskon penjual, voucher, koin) tetap dari file pesanan
+- Order yang belum ada di file penghasilan: bagian atas tetap tampil dari
+  file pesanan, bagian biaya menampilkan catatan bahwa order belum ada di
+  file penghasilan yang di-import
+
+#### Fixed
+- **Subtotal Pesanan salah menjumlahkan** — header sebelumnya menjumlahkan
+  semua baris visible (Harga Sebelum Diskon + Harga Produk), sehingga
+  muncul Rp 158.400 padahal harusnya Rp 68.400. "Harga Sebelum Diskon"
+  sekarang ditandai `excludeFromTotal` (info konteks, bukan bagian
+  perhitungan). Subtotal = Harga Produk + ongkir
+- Salah label "Ongkir Dibayar Pembeli" (menampilkan ongkir jasa kirim
+  Rp 6,7 juta) → sekarang memakai field yang benar (Rp 839.185), ditambah
+  baris terpisah "Ongkir Dibayarkan ke Jasa Kirim"
+
+#### Removed
+- Section **"Cek Silang"** dihapus seluruhnya dari UI, backend
+  (`getEarningsReconciliation`), dan type (`EarningsReconciliation`) —
+  setelah dievaluasi 3x, ini validasi teknis yang tidak punya nilai
+  bisnis dan hanya membingungkan
+- Baris "Total Dibayar Pembeli" di panel penghasilan
+- Bagian ongkir estimasi di panel "Rincian Potongan Platform" — angka
+  realnya sudah ada di file penghasilan
+
+#### Verified
+- Order `260901T1KY92H2`: Subtotal Rp 77.000, biaya total -Rp 26.125,
+  Estimasi Total Penghasilan **Rp 50.875** — cocok dengan formula
+  `Harga Produk + Ongkir + Gratis Ongkir + Semua Biaya − Refund`
+- Order tanpa data penghasilan: bagian atas tampil, bagian biaya menampilkan
+  catatan (tidak ada angka Rp 0 yang menyesatkan)
+
+---
+
+### Insight: Cara Kerja File Penghasilan - October 10, 2026
+
+Setelah investigasi panjang kenapa "biaya platform tidak muncul padahal
+sudah import", ditemukan fakta penting tentang file export penghasilan:
+
+- File **Penghasilan** di Seller Center di-filter per **bulan pelepasan
+  dana** (Tanggal Dana Dilepaskan), BUKAN per tanggal order dibuat
+- Dana baru dilepas **setelah order selesai + masa retur (~7 hari)**.
+  Jadi order Mei yang selesainya Juni → dananya lepas Juni → tertulis di
+  file penghasilan **Juni**, bukan file "Mei"
+- Order yang masih dalam masa retur / masih dikirim / dibatalkan tidak
+  akan pernah ada di file penghasilan (wajar)
+
+**Implikasi**: untuk coverage penuh, download file penghasilan beberapa
+bulan berturut-turut (atau rentang yang lebih lebar). Import ulang tidak
+menghapus data lama — hanya upsert per nomor pesanan.
+
+---
+
 ### Import File Penghasilan (Laporan Settlement) - October 8, 2026
 
 #### Added — Sumber data biaya platform yang 100% akurat
@@ -424,5 +527,5 @@ Removed all marketplace brand references to avoid trademark/copyright issues:
 
 ---
 
-**Last Updated**: October 8, 2026  
-**Latest Commit**: `c1c62fc` — feat: import file penghasilan + rincian biaya platform
+**Last Updated**: October 10, 2026  
+**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan

@@ -24,6 +24,13 @@
   penghasilan bersih & rincian SEMUA biaya platform yang dipotong (admin,
   transaksi, promo, ongkir XTRA, PPh, dll). Kedua file dicocokkan otomatis
   by nomor pesanan
+- 📋 **Rincian Penghasilan Gaya Marketplace** - Klik pesanan apa pun untuk
+  lihat perhitungan lengkap dari Subtotal Pesanan sampai Estimasi Total
+  Penghasilan, persis seperti di Seller Center: voucher & subsidi, biaya
+  platform, gratis ongkir XTRA, biaya layanan, promosi, pajak
+- 💚 **Badge Sudah Cair / Belum Cair** - Tabel pesanan menandai order mana
+  yang dananya sudah dilepas platform (rincian lengkap) vs yang belum —
+  dibaca murni dari hasil import Excel Anda, tanpa koneksi API marketplace
 - 📥 **Multi-Format Export** - Download data sebagai CSV, Excel (.xlsx), atau PDF
   (Pesanan, Profit, atau Statistik — 9 opsi, semua dari Dashboard)
 - 🗑️ **Reset Data** - Hapus semua data kembali ke kondisi kosong, kapan saja
