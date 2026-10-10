@@ -3,7 +3,7 @@
 **Last Updated**: October 10, 2026  
 **Phase**: Phase 1.0 COMPLETE  
 **Status**: 🟢 WORKING WITH REAL DATA + PUSHED TO GITHUB  
-**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
+**Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF
 
 ---
 
@@ -39,7 +39,7 @@
 |------|-------|
 | URL | https://github.com/panzauto46-bot/Bisnisku |
 | Branch | `master` |
-| Latest Commit | `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan |
+| Latest Commit | `0e3797e` — feat: export data Penghasilan Platform + grafik di PDF |
 | Files | 80+ files |
 | Lines | 22.000+ baris kode |
 
@@ -72,7 +72,9 @@
 - ✅ **Penghasilan Bersih Platform** — panel dari file settlement: total
   penghasilan bersih, total biaya platform (+ persentase), rincian 11 biaya,
   komponen ongkir, diskon disponsor. Empty state sebelum import
-- ✅ **Export Data** — dropdown 9 opsi (CSV/Excel/PDF × Pesanan/Profit/Statistik)
+- ✅ **Export Data** — dropdown **12 opsi** (CSV/Excel/PDF ×
+  Pesanan/Profit/Statistik/Penghasilan), PDF Penghasilan punya grafik
+  komposisi biaya platform & penghasilan per tanggal
 
 ### Order Pages (5 halaman)
 - ✅ Semua / Perlu Dikirim / Dikirim / Selesai / Dibatalkan

@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Export Data Penghasilan Platform - October 10, 2026
+
+#### Added — Tipe export ke-4
+Menu Export Data sekarang punya **12 opsi** (sebelumnya 9). Tipe baru
+**"Penghasilan"** tersedia dalam CSV, Excel, dan PDF:
+
+- 🆕 `EarningsRow` + `EARNINGS_FIELDS` di `export.service.ts` — 22 kolom:
+  No. Pesanan, Status, Status Penghasilan, Tanggal Dana Dilepas, Total
+  Penghasilan, Harga Produk, ongkir (pembeli/jasa kirim/gratis ongkir),
+  Pengembalian ke Pembeli, 11 biaya platform, Total Biaya Platform
+- 🆕 `earningsToCsv` / `buildEarningsXlsx` / `earningsToPdf`
+- 🆕 `fetchEarnings()` di route export — `LEFT JOIN orders ×
+  order_earnings` urut tanggal order terbaru
+- 🆕 Komponen menu: grup "Penghasilan Platform" dengan ikon dompet
+  (`Wallet`)
+
+#### Changed — PDF profesional dengan grafik
+- 🔄 PDF Penghasilan sekarang punya: header branded, 4 summary cards
+  (Total Penghasilan, Harga Produk, Total Biaya Platform, jumlah order),
+  **grafik komposisi biaya platform** (bar chart horizontal), **grafik
+  penghasilan per tanggal pelepasan**, lalu tabel rincian per order
+  multi-halaman (header hijau emerald)
+- 🆕 Helper `drawBarChart()` — bar chart digambar dengan jsPDF primitives
+  (`roundedRect`), jadi render server-side tanpa DOM/canvas
+
+#### Design decision
+Semua order di-export, bukan hanya yang sudah cair. Order tanpa data
+penghasilan dapat status **"Belum Cair"** dengan kolom kosong — supaya
+file export konsisten dengan yang ditampilkan aplikasi dan jelas mana
+yang belum ada datanya. Biaya platform (disimpan negatif di DB
+mengikuti file settlement) ditampilkan positif di export.
+
+#### Verified
+- CSV: 524 baris (1 header + 523 order), UTF-8 BOM
+- Excel: sheet "Penghasilan", 22 kolom + 6 baris ringkasan di atas tabel
+- PDF: 16 halaman valid (halaman 1 summary + 2 grafik, halaman 2-16
+  tabel rincian), header `%PDF-` benar
+- Semua 3 format return 200 dengan Content-Type & filename benar
+- Type-check clean (`tsc --noEmit` exit 0)
+
+---
+
 ### Badge "Sudah Cair / Belum Cair" di Tabel Pesanan - October 10, 2026
 
 #### Added — Transparansi status penghasilan per order
@@ -528,4 +570,4 @@ Removed all marketplace brand references to avoid trademark/copyright issues:
 ---
 
 **Last Updated**: October 10, 2026  
-**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
+**Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF

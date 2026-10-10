@@ -51,6 +51,12 @@ berasal dari file `semua.xlsx` yang Anda export dari Marketplace Seller Center.
 
 ## ✨ Update Terbaru (Oct 7-10, 2026)
 
+### Export Penghasilan Platform (Oct 10) — commit `0e3797e`
+- Tipe export baru **"Penghasilan"** → menu Export Data sekarang 12 opsi
+  (CSV/Excel/PDF × Pesanan/Profit/Statistik/Penghasilan)
+- PDF profesional: summary cards + **grafik komposisi biaya platform** +
+  grafik penghasilan per tanggal + tabel rincian multi-halaman
+- Semua order di-export; yang belum cair diberi status "Belum Cair"
 ### Badge "Sudah Cair / Belum Cair" (Oct 10) — commit `5b7d2f0`
 - Kolom **Penghasilan** di tabel pesanan: ✓ Sudah Cair / ⏳ Belum Cair /
   ✕ Tidak Ada. Murni baca `order_earnings` (hasil import Excel), tanpa API
@@ -449,5 +455,5 @@ npm run dev
 
 **Last Updated**: October 10, 2026  
 **Status**: 🟢 Working with real data  
-**Latest Commit**: `5b7d2f0` — feat: badge Sudah Cair / Belum Cair di tabel pesanan
+**Latest Commit**: `0e3797e` — feat: export data Penghasilan Platform (CSV/Excel/PDF) + grafik di PDF
 **Next Update**: Setelah PR-A (filter periode)

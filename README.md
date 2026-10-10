@@ -32,7 +32,9 @@
   yang dananya sudah dilepas platform (rincian lengkap) vs yang belum —
   dibaca murni dari hasil import Excel Anda, tanpa koneksi API marketplace
 - 📥 **Multi-Format Export** - Download data sebagai CSV, Excel (.xlsx), atau PDF
-  (Pesanan, Profit, atau Statistik — 9 opsi, semua dari Dashboard)
+  untuk 4 jenis data: **Pesanan**, **Profit**, **Statistik**, dan
+  **Penghasilan Platform** (12 opsi total). PDF Penghasilan profesional
+  dengan grafik komposisi biaya platform dan penghasilan per tanggal
 - 🗑️ **Reset Data** - Hapus semua data kembali ke kondisi kosong, kapan saja
 - 🎨 **Beautiful UI** - Modern interface dengan smooth animations
 - ⚡ **Fast Performance** - Handle 1000+ orders dengan mudah
